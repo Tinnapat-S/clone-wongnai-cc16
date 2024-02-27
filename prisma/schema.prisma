@@ -39,10 +39,10 @@ model User {
   birthdate  DateTime?
   imgProfile String?   @map("img_profile") @db.VarChar(200)
   createdAt  DateTime  @default(now()) @map("created_at")
-  role       Role      @default(USER)
+  // role       Role      @default(USER)
 
-  reviews  Review[]
-  Bookmark Bookmark[]
+  reviews   Review[]
+  bookmarks Bookmark[]
 
   @@map("users")
 }
@@ -54,9 +54,9 @@ model Merchant {
   username String @unique @db.VarChar(40)
   mobile   String @unique @db.VarChar(10)
   password String @db.VarChar(72)
-  role     Role   @default(MERCHANT)
+  // role     Role   @default(MERCHANT)
 
-  Restaurant Restaurant[]
+  restaurants Restaurant[]
 
   @@map("merchants")
 }
@@ -69,7 +69,7 @@ model Province {
 
   districts    District[]
   subDistricts SubDistrict[]
-  Restaurant   Restaurant[]
+  restaurants  Restaurant[]
 
   @@map("provinces")
 }
@@ -101,7 +101,7 @@ model SubDistrict {
   subDistrictNameTh String @map("subdistrict_name_Th") @db.VarChar(50)
   postalCode        Int
 
-  Restaurant Restaurant[]
+  restaurants Restaurant[]
 
   @@map("sub_district")
 }
@@ -116,13 +116,13 @@ enum Date {
   sunday
 }
 
-model PriceLength {
-  id         Int          @id
-  length     String       @db.VarChar(50)
-  Restaurant Restaurant[]
+// model PriceLength {
+//   id         Int          @id
+//   length     String       @db.VarChar(50)
+//   Restaurant Restaurant[]
 
-  @@map("price_length")
-}
+//   @@map("price_length")
+// }
 
 model OpenHours {
   id           Int        @id
@@ -141,8 +141,8 @@ model Restaurant {
   merchant       Merchant    @relation(fields: [merchantId], references: [id])
   restaurantName String      @map("restaurant_name") @db.VarChar(100)
   subtitle       String      @db.VarChar(500)
-  lat            Int?
-  lng            Int?
+  lat            String?
+  lng            String?
   reviewPoint    Int         @default(0) @map("review_point")
   reviewCount    Int         @default(0) @map("review_count")
   verify         Boolean     @default(false)
@@ -155,17 +155,16 @@ model Restaurant {
   subDistrict    SubDistrict @relation(fields: [subDistrictId], references: [subdistricCode])
   priovinceId    Int         @map("province_id")
   priovinces     Province    @relation(fields: [priovinceId], references: [provinceCode])
-  priceLengthId  Int         @map("price_length_id")
-  priceLength    PriceLength @relation(fields: [priceLengthId], references: [id])
+  priceLength    String      @map("price_length")
   categoryId     Int         @map("category_id")
   category       Category    @relation(fields: [categoryId], references: [id])
 
-  RestauranImage RestauranImage[]
-  Menu           Menu[]
-  Review         Review[]
-  Bookmark       Bookmark[]
-  OpenHours      OpenHours[]
-  Facility       Facility[]
+  restauranImages RestauranImage[]
+  menus           Menu[]
+  reviews         Review[]
+  bookmarks       Bookmark[]
+  openHours       OpenHours[]
+  facilities      Facility[]
 
   @@map("restaurants")
 }
@@ -215,7 +214,7 @@ model Review {
   createdAt   DateTime  @map("created_at")
   deletedAt   DateTime? @map("deleted_at")
 
-  ReviewImg ReviewImg[]
+  reviewImgs ReviewImg[]
 
   @@map("reviews")
 }
@@ -223,7 +222,7 @@ model Review {
 model Category {
   id           Int          @id
   categoryName String       @map("category_name") @db.VarChar(50)
-  Restaurant   Restaurant[]
+  restaurants  Restaurant[]
 
   @@map("categorys")
 }
@@ -242,7 +241,7 @@ model Admin {
   id       Int    @id
   username String @unique @db.VarChar(50)
   password String @db.VarChar(50)
-  role     Role   @default(ADMIN)
+  // role     Role   @default(ADMIN)
 
   @@map("admins")
 }
