@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "eslint",
+            "type": "shell",
+            "command": "npx",
+            "args": ["eslint", "'${workspaceFolder}/src/**'", "--fix"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
+        }
+    ]
+}

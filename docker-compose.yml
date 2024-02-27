@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+    db:
+        image: mysql:8.0
+        restart: always
+        env_file:
+            - docker/.env
+        ports:
+            - "3306:3306"
+        volumes:
+            - db:/var/lib/postgresql
+    # api:
+    #   depends_on:
+    #     - db
+    #   build: ./api
+    #   env_file:
+    #     - ./api/.env
+    #   ports:
+    #     - "8000:8000"
+    #   volumes:
+    #     - ./api/src:/api/src
+
+volumes:
+    db:

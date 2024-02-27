@@ -1,0 +1,16 @@
+{
+    "env": {
+        "node": true, // Include Node.js globals
+        "commonjs": true // Enable CommonJS global variables and module syntax
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+
+    "rules": {
+        "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }]
+    },
+    "ignorePatterns": ["prisma/", "dist/", "logs/", "node_modules/"]
+}
