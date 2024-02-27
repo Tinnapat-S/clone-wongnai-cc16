@@ -136,28 +136,28 @@ model OpenHours {
 }
 
 model Restaurant {
-  id             Int         @id @default(autoincrement())
-  merchantId     Int         @map("merchant_id")
-  merchant       Merchant    @relation(fields: [merchantId], references: [id])
-  restaurantName String      @map("restaurant_name") @db.VarChar(100)
-  subtitle       String      @db.VarChar(500)
-  lat            String?
-  lng            String?
-  reviewPoint    Int         @default(0) @map("review_point")
-  reviewCount    Int         @default(0) @map("review_count")
-  verify         Boolean     @default(false)
-  isOpen         Boolean     @default(false) @map("is_open")
+  id              Int         @id @default(autoincrement())
+  merchantId      Int         @map("merchant_id")
+  merchant        Merchant    @relation(fields: [merchantId], references: [id])
+  restaurantName  String      @map("restaurant_name") @db.VarChar(100)
+  subtitle        String      @db.VarChar(500)
+  lat             String?
+  lng             String?
+  reviewPoint     Int         @default(0) @map("review_point")
+  reviewCount     Int         @default(0) @map("review_count")
+  verify          Boolean     @default(false)
+  isOpen          Boolean     @default(false) @map("is_open")
   // 
-  address        String      @db.VarChar(200)
-  districtId     Int         @map("district_id")
-  district       District    @relation(fields: [districtId], references: [districtCode])
-  subDistrictId  Int         @map("subdistrict_id")
-  subDistrict    SubDistrict @relation(fields: [subDistrictId], references: [subdistrictCode])
-  provinceId     Int         @map("province_id")
-  provinces      Province    @relation(fields: [provinceId], references: [provinceCode])
-  priceLength    String      @map("price_length")
-  categoryId     Int         @map("category_id")
-  category       Category    @relation(fields: [categoryId], references: [id])
+  address         String      @db.VarChar(200)
+  districtCode    Int         @map("district_id")
+  district        District    @relation(fields: [districtCode], references: [districtCode])
+  subDistrictCode Int         @map("subdistrict_id")
+  subDistrict     SubDistrict @relation(fields: [subDistrictCode], references: [subdistrictCode])
+  provinceCode    Int         @map("province_id")
+  provinces       Province    @relation(fields: [provinceCode], references: [provinceCode])
+  priceLength     String      @map("price_length")
+  categoryId      Int         @map("category_id")
+  category        Category    @relation(fields: [categoryId], references: [id])
 
   restaurantImages           RestaurantImage[]
   menus                      Menu[]
