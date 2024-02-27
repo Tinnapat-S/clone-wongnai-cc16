@@ -13,27 +13,246 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id              String   @id @default(uuid())
-  username        String   @unique
-  password        String
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
-  firstName       String   @map("first_name")
-  lastName        String   @map("last_name")
-  phoneNumber     String?  @map("phone_number")
-  profileImageUrl String?  @map("profile_image_url")
-  birthDate       String?  @map("birth_date")
-  gender          Gender   @default(MALE)
-  role            Role
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
 }
 
 enum Role {
   USER
   ADMIN
+  MERCHANT
 }
 
-enum Gender {
-  MALE
-  FEMALE
+model User {
+  id Int @id
+
+  facebookId String? @unique @map("facebook_id") @db.VarChar(100)
+  googleId   String? @unique @map("google_id") @db.VarChar(100)
+
+  name       String?   @db.VarChar(50)
+  mobile     String?   @unique @db.VarChar(10)
+  email      String?   @unique @db.VarChar(40)
+  password   String?   @db.VarChar(72)
+  gender     Gender?
+  birthdate  DateTime?
+  imgProfile String?   @map("img_profile") @db.VarChar(200)
+  createdAt  DateTime  @default(now()) @map("created_at")
+  role       Role      @default(USER)
+
+  reviews  Review[]
+  Bookmark Bookmark[]
+
+  @@map("users")
+}
+
+model Merchant {
+  id   Int    @id
+  name String @db.VarChar(50)
+
+  username String @unique @db.VarChar(40)
+  mobile   String @unique @db.VarChar(10)
+  password String @db.VarChar(72)
+  role     Role   @default(MERCHANT)
+
+  Restaurant Restaurant[]
+
+  @@map("merchants")
+}
+
+model Province {
+  id             Int
+  provinceCode   Int    @id @map("province_code")
+  provinceNameTh String @map("province_name_th") @db.VarChar(200)
+  provinceNameEn String @map("province_name_en") @db.VarChar(200)
+
+  districts    District[]
+  subDistricts SubDistrict[]
+  Restaurant   Restaurant[]
+
+  @@map("provinces")
+}
+
+model District {
+  id             Int
+  districtCode   Int      @id @map("district_code")
+  provinceCode   Int      @map("province_code")
+  provinceCodeId Province @relation(fields: [provinceCode], references: [provinceCode])
+  districtNameTh String   @map("distrit_name_TH") @db.VarChar(50)
+  districtNameEn String   @map("distrit_name_EN") @db.VarChar(50)
+  postalCode     Int
+
+  restaurants  Restaurant[]
+  subDistricts SubDistrict[]
+
+  @@map("districts")
+}
+
+model SubDistrict {
+  id             Int
+  subdistricCode Int      @id @map("subdistrict_code")
+  districtCode   Int      @map("district_code")
+  districtCodeId District @relation(fields: [districtCode], references: [districtCode])
+  provinceCode   Int      @map("province_code")
+  provinceCodeId Province @relation(fields: [provinceCode], references: [provinceCode])
+
+  subDistrictNameEn String @map("subdistrict_name_En") @db.VarChar(50)
+  subDistrictNameTh String @map("subdistrict_name_Th") @db.VarChar(50)
+  postalCode        Int
+
+  Restaurant Restaurant[]
+
+  @@map("sub_district")
+}
+
+enum Date {
+  monday
+  tuesday
+  wednesday
+  thursday
+  friday
+  saturday
+  sunday
+}
+
+model PriceLength {
+  id         Int          @id
+  length     String       @db.VarChar(50)
+  Restaurant Restaurant[]
+
+  @@map("price_length")
+}
+
+model OpenHours {
+  id           Int        @id
+  restaurantId Int        @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  date         Date
+  openTime     DateTime   @map("open_time") @db.Time()
+  closeTime    DateTime   @map("close_time") @db.Time()
+
+  @@map("open_hours")
+}
+
+model Restaurant {
+  id             Int         @id
+  merchantId     Int         @map("merchant_id")
+  merchant       Merchant    @relation(fields: [merchantId], references: [id])
+  restaurantName String      @map("restaurant_name") @db.VarChar(100)
+  subtitle       String      @db.VarChar(500)
+  lat            Int?
+  lng            Int?
+  reviewPoint    Int         @default(0) @map("review_point")
+  reviewCount    Int         @default(0) @map("review_count")
+  verify         Boolean     @default(false)
+  isOpen         Boolean     @default(false) @map("is_open")
+  // 
+  address        String      @db.VarChar(200)
+  districtId     Int         @map("district_id")
+  district       District    @relation(fields: [districtId], references: [districtCode])
+  subDistrictId  Int         @map("subdistrict_id")
+  subDistrict    SubDistrict @relation(fields: [subDistrictId], references: [subdistricCode])
+  priovinceId    Int         @map("province_id")
+  priovinces     Province    @relation(fields: [priovinceId], references: [provinceCode])
+  priceLengthId  Int         @map("price_length_id")
+  priceLength    PriceLength @relation(fields: [priceLengthId], references: [id])
+  categoryId     Int         @map("category_id")
+  category       Category    @relation(fields: [categoryId], references: [id])
+
+  RestauranImage RestauranImage[]
+  Menu           Menu[]
+  Review         Review[]
+  Bookmark       Bookmark[]
+  OpenHours      OpenHours[]
+  Facility       Facility[]
+
+  @@map("restaurants")
+}
+
+model RestauranImage {
+  id           Int        @id
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  img          String     @db.VarChar(256)
+
+  @@map("restaurant_img")
+}
+
+model Menu {
+  id           Int        @id
+  restaurantId Int        @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  menuName     String     @map("menu_name") @db.VarChar(100)
+  subtitle     String     @map("sub_title") @db.VarChar(200)
+  price        Int?
+  star         Int?
+  img          String     @db.VarChar(256)
+
+  @@map("menus")
+}
+
+model ReviewImg {
+  id       Int    @id
+  img      String @db.VarChar(200)
+  reviewId Int
+  review   Review @relation(fields: [reviewId], references: [id])
+
+  @@map("review_img")
+}
+
+model Review {
+  id           Int        @id
+  userId       Int        @map("user_id")
+  user         User       @relation(fields: [userId], references: [id])
+  restaurantId Int        @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  star         Int
+  // status       Boolean
+
+  description String    @db.Text
+  // report       Boolean
+  createdAt   DateTime  @map("created_at")
+  deletedAt   DateTime? @map("deleted_at")
+
+  ReviewImg ReviewImg[]
+
+  @@map("reviews")
+}
+
+model Category {
+  id           Int          @id
+  categoryName String       @map("category_name") @db.VarChar(50)
+  Restaurant   Restaurant[]
+
+  @@map("categorys")
+}
+
+model Facility {
+  id           Int        @id
+  facilityName String     @map("facility_name") @db.VarChar(50)
+  // Restaurant Restaurant[]
+  restaurantId Int
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("mores")
+}
+
+model Admin {
+  id       Int    @id
+  username String @unique @db.VarChar(50)
+  password String @db.VarChar(50)
+  role     Role   @default(ADMIN)
+
+  @@map("admins")
+}
+
+model Bookmark {
+  id           Int        @id
+  userId       Int        @map("user_id")
+  user         User       @relation(fields: [userId], references: [id])
+  restaurantId Int        @map("restaurant_id")
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+
+  @@map("bookmarks")
 }
