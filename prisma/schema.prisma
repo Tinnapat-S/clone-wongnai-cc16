@@ -147,6 +147,7 @@ model Restaurant {
   reviewCount     Int         @default(0) @map("review_count")
   verify          Boolean     @default(false)
   isOpen          Boolean     @default(false) @map("is_open")
+  mobile          String      @unique @db.VarChar(10)
   // 
   address         String      @db.VarChar(200)
   districtCode    Int         @map("district_id")
