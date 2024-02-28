@@ -85,7 +85,7 @@ const menu = [
     },
 ]
 const ReviewImg = [{ reviewId: 1, img: "https://img.wongnai.com/p/1920x0/2023/02/08/220954c28afc44c68227ff6c0e076cb6.jpg" }]
-const Review = [{ userId: 1, restaurantId: 1, description: "huntamayoungReview", star: 3 }]
+const Review = [{ userId: 1, restaurantId: 1, description: "huntamayoungReview", star: 3, title: "test" }]
 const facility = [
     { id: 1, facilityName: "ที่จอดรถ" },
     { id: 2, facilityName: "ไวไฟ" },

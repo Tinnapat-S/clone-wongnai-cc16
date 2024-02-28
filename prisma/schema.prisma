@@ -208,6 +208,8 @@ model Review {
   restaurantId Int        @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   star         Int
+  title        String     @db.VarChar(191)
+  report       Boolean?
   // status       Boolean
 
   description String    @db.Text
