@@ -148,6 +148,7 @@ model Restaurant {
   verify          Boolean     @default(false)
   isOpen          Boolean     @default(false) @map("is_open")
   mobile          String      @unique @db.VarChar(10)
+  email           String      @unique @db.VarChar(50)
   // 
   address         String      @db.VarChar(200)
   districtCode    Int         @map("district_id")
