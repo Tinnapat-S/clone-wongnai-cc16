@@ -26,7 +26,7 @@ enum Role {
 }
 
 model User {
-  id Int @id
+  id Int @id @default(autoincrement())
 
   facebookId String? @unique @map("facebook_id") @db.VarChar(100)
   googleId   String? @unique @map("google_id") @db.VarChar(100)
@@ -48,7 +48,7 @@ model User {
 }
 
 model Merchant {
-  id   Int    @id
+  id   Int    @id @default(autoincrement())
   name String @db.VarChar(50)
 
   username String @unique @db.VarChar(40)
@@ -90,15 +90,15 @@ model District {
 }
 
 model SubDistrict {
-  id             Int
-  subdistricCode Int      @id @map("subdistrict_code")
-  districtCode   Int      @map("district_code")
-  districtCodeId District @relation(fields: [districtCode], references: [districtCode])
-  provinceCode   Int      @map("province_code")
-  provinceCodeId Province @relation(fields: [provinceCode], references: [provinceCode])
+  id              Int
+  subdistrictCode Int      @id @map("subdistrict_code")
+  districtCode    Int      @map("district_code")
+  districtCodeId  District @relation(fields: [districtCode], references: [districtCode])
+  provinceCode    Int      @map("province_code")
+  provinceCodeId  Province @relation(fields: [provinceCode], references: [provinceCode])
 
-  subDistrictNameEn String @map("subdistrict_name_En") @db.VarChar(50)
-  subDistrictNameTh String @map("subdistrict_name_Th") @db.VarChar(50)
+  subdistrictNameEn String @map("subdistrict_name_En") @db.VarChar(50)
+  subdistrictNameTh String @map("subdistrict_name_Th") @db.VarChar(50)
   postalCode        Int
 
   restaurants Restaurant[]
@@ -125,7 +125,7 @@ enum Date {
 // }
 
 model OpenHours {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   restaurantId Int        @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   date         Date
@@ -136,41 +136,42 @@ model OpenHours {
 }
 
 model Restaurant {
-  id             Int         @id
-  merchantId     Int         @map("merchant_id")
-  merchant       Merchant    @relation(fields: [merchantId], references: [id])
-  restaurantName String      @map("restaurant_name") @db.VarChar(100)
-  subtitle       String      @db.VarChar(500)
-  lat            String?
-  lng            String?
-  reviewPoint    Int         @default(0) @map("review_point")
-  reviewCount    Int         @default(0) @map("review_count")
-  verify         Boolean     @default(false)
-  isOpen         Boolean     @default(false) @map("is_open")
+  id              Int         @id @default(autoincrement())
+  merchantId      Int         @map("merchant_id")
+  merchant        Merchant    @relation(fields: [merchantId], references: [id])
+  restaurantName  String      @map("restaurant_name") @db.VarChar(100)
+  subtitle        String      @db.VarChar(500)
+  lat             String?
+  lng             String?
+  reviewPoint     Int         @default(0) @map("review_point")
+  reviewCount     Int         @default(0) @map("review_count")
+  verify          Boolean     @default(false)
+  isOpen          Boolean     @default(false) @map("is_open")
   // 
-  address        String      @db.VarChar(200)
-  districtId     Int         @map("district_id")
-  district       District    @relation(fields: [districtId], references: [districtCode])
-  subDistrictId  Int         @map("subdistrict_id")
-  subDistrict    SubDistrict @relation(fields: [subDistrictId], references: [subdistricCode])
-  priovinceId    Int         @map("province_id")
-  priovinces     Province    @relation(fields: [priovinceId], references: [provinceCode])
-  priceLength    String      @map("price_length")
-  categoryId     Int         @map("category_id")
-  category       Category    @relation(fields: [categoryId], references: [id])
+  address         String      @db.VarChar(200)
+  districtCode    Int         @map("district_id")
+  district        District    @relation(fields: [districtCode], references: [districtCode])
+  subDistrictCode Int         @map("subdistrict_id")
+  subDistrict     SubDistrict @relation(fields: [subDistrictCode], references: [subdistrictCode])
+  provinceCode    Int         @map("province_id")
+  provinces       Province    @relation(fields: [provinceCode], references: [provinceCode])
+  priceLength     String      @map("price_length")
+  categoryId      Int         @map("category_id")
+  category        Category    @relation(fields: [categoryId], references: [id])
 
-  restauranImages RestauranImage[]
-  menus           Menu[]
-  reviews         Review[]
-  bookmarks       Bookmark[]
-  openHours       OpenHours[]
-  facilities      Facility[]
+  restaurantImages           RestaurantImage[]
+  menus                      Menu[]
+  reviews                    Review[]
+  bookmarks                  Bookmark[]
+  openHours                  OpenHours[]
+  facilitiesWithRestaurantId FacilityWithRestaurantId[]
 
   @@map("restaurants")
 }
 
-model RestauranImage {
-  id           Int        @id
+//here
+model RestaurantImage {
+  id           Int        @id @default(autoincrement())
   restaurantId Int
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   img          String     @db.VarChar(256)
@@ -179,7 +180,7 @@ model RestauranImage {
 }
 
 model Menu {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   restaurantId Int        @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   menuName     String     @map("menu_name") @db.VarChar(100)
@@ -192,7 +193,7 @@ model Menu {
 }
 
 model ReviewImg {
-  id       Int    @id
+  id       Int    @id @default(autoincrement())
   img      String @db.VarChar(200)
   reviewId Int
   review   Review @relation(fields: [reviewId], references: [id])
@@ -201,7 +202,7 @@ model ReviewImg {
 }
 
 model Review {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   userId       Int        @map("user_id")
   user         User       @relation(fields: [userId], references: [id])
   restaurantId Int        @map("restaurant_id")
@@ -211,7 +212,7 @@ model Review {
 
   description String    @db.Text
   // report       Boolean
-  createdAt   DateTime  @map("created_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
   deletedAt   DateTime? @map("deleted_at")
 
   reviewImgs ReviewImg[]
@@ -220,25 +221,34 @@ model Review {
 }
 
 model Category {
-  id           Int          @id
+  id           Int          @id @default(autoincrement())
   categoryName String       @map("category_name") @db.VarChar(50)
   restaurants  Restaurant[]
 
   @@map("categorys")
 }
 
-model Facility {
-  id           Int        @id
-  facilityName String     @map("facility_name") @db.VarChar(50)
+model FacilityWithRestaurantId {
+  id           Int         @id @default(autoincrement())
+  facilityId   Int         @map("facility_id")
+  facility     Facility    @relation(fields: [facilityId], references: [id])
   // Restaurant Restaurant[]
-  restaurantId Int
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int?
+  restaurant   Restaurant? @relation(fields: [restaurantId], references: [id])
 
-  @@map("mores")
+  @@map("facilities_with_restaurant_id")
+}
+
+model Facility {
+  id                       Int                        @id @default(autoincrement())
+  facilityName             String                     @map("facility_name") @db.VarChar(100)
+  facilityWithRestaurantId FacilityWithRestaurantId[]
+
+  @@map("facilities")
 }
 
 model Admin {
-  id       Int    @id
+  id       Int    @id @default(autoincrement())
   username String @unique @db.VarChar(50)
   password String @db.VarChar(50)
   // role     Role   @default(ADMIN)
@@ -247,7 +257,7 @@ model Admin {
 }
 
 model Bookmark {
-  id           Int        @id
+  id           Int        @id @default(autoincrement())
   userId       Int        @map("user_id")
   user         User       @relation(fields: [userId], references: [id])
   restaurantId Int        @map("restaurant_id")
