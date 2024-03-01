@@ -1,5 +1,6 @@
 const { CustomError } = require("../config/error")
 const { errorRef, httpCode } = require("../constant/error")
+const { ValidationError } = require("joi")
 
 module.exports.errorMiddlewares = (err, req, res, _next) => {
     if (err instanceof CustomError) {
@@ -16,6 +17,8 @@ module.exports.errorMiddlewares = (err, req, res, _next) => {
                 res.status(httpCode["500_INTERNAL_SERVER_ERROR"])
                 break
         }
+    } else if (err instanceof ValidationError) {
+        res.status(400)
     } else {
         res.status(httpCode["500_INTERNAL_SERVER_ERROR"])
     }

@@ -59,6 +59,7 @@ const category = [
 const restaurant = [
     {
         id: 1,
+        mobile: "0123456789",
         merchantId: 1,
         restaurantName: "hunhunkai",
         subtitle: "pommaikai",
