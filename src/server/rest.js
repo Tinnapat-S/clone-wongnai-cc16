@@ -10,6 +10,8 @@ const { notFound } = require("../middlewares/notFound")
 const { errorMiddlewares } = require("../middlewares/error")
 const CustomError = require("../config/error")
 const userRoute = require("../router/user")
+const merchantRoute = require("../router/merchant")
+const restaurantRoute = require("../router/restaurants")
 
 //=====================================================Server Zone
 module.exports = function restApiServer(app) {
@@ -30,6 +32,9 @@ module.exports = function restApiServer(app) {
         }
     })
     app.use("/user", userRoute)
+    app.use("/merchant", merchantRoute)
+    app.use("/restaurants", restaurantRoute)
+    // app.use("/admin")
 
     //=====================================================Throwing Zone
     app.use(notFound)
