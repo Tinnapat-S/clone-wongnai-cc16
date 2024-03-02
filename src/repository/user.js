@@ -1,10 +1,10 @@
 const prisma = require("../config/prisma")
 
 // =========================================== BASIC CRUD ===================================
-module.exports.get = async (username) =>
+module.exports.get = async (id) =>
     await prisma.user.findFirst({
         where: {
-            OR: [{ email: username }, { mobile: username }],
+            id,
         },
     })
 module.exports.getAll = async () => await prisma.user.findMany()
