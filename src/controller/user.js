@@ -19,7 +19,7 @@ module.exports.get = async (req, res, next) => {
     try {
         console.log(req.params)
         const { id } = req.params
-        const user = await repo.user.get(+id)
+        const user = await repo.user.userGetProfile(+id)
         if (!user) return res.status(200).json({ message: "not found" })
         res.status(200).json({ user })
     } catch (err) {

@@ -20,3 +20,5 @@ module.exports.getMe = () => {}
 
 module.exports.findUserFacebook = async (facebookId) => await prisma.user.findFirst({ where: { facebookId } })
 module.exports.createUserLoginWithFacebook = async ({ facebookId, name }) => await prisma.user.create({ data: { facebookId, name } })
+
+module.exports.userGetProfile = async (id) => await prisma.user.findFirst({ where: { id } })
