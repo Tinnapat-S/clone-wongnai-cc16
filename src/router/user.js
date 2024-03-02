@@ -9,7 +9,7 @@ const userRoute = express.Router()
 
 userRoute.get("/", c.user.getAll)
 userRoute.get("/me", authenticate, c.user.getMe) //
-userRoute.get("/:id", c.user.get)
+userRoute.get("/:id", authenticate, c.user.get)
 userRoute.post("/register", upload.fields([{ name: "imgProfile", maxCount: 1 }]), validateRegister, c.user.register) //
 // userRoute.post("/register", validateRegister, c.user.register) //
 userRoute.post("/loginWithFace", c.user.registerFacebook) //

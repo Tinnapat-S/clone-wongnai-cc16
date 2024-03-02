@@ -41,6 +41,7 @@ module.exports.login = async (req, res, next) => {
         // GET username from database
         console.log(req.body)
         const user = await repo.user.get(username)
+        console.log(user, "user")
         if (!user) throw new CustomError("Username is wrong", "WRONG_INPUT", 400)
 
         // COMPARE password with database
