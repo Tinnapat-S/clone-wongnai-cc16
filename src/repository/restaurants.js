@@ -6,6 +6,9 @@ module.exports.getAll = async () =>
     await prisma.restaurant.findMany({
         include: { restaurantImages: { select: { id: true, img: true } }, category: { select: { categoryName: true } } },
     })
-module.exports.create = async (data) => await prisma.restaurant.create({ data })
-module.exports.update = async ({ id }, data) => await prisma.restaurant.update({ where: { id }, data })
-module.exports.delete = async ({ id }) => await prisma.restaurant.delete({ where: { id } })
+
+module.exports.getFilter = async (where) =>
+    await prisma.restaurant.findMany({
+        where: where,
+        include: { restaurantImages: { select: { id: true, img: true } }, category: { select: { categoryName: true } } },
+    })
