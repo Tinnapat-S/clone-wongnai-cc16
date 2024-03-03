@@ -9,7 +9,7 @@ module.exports.get = async (username) =>
     })
 module.exports.getAll = async () => await prisma.user.findMany()
 module.exports.create = async (data) => await prisma.user.create({ data })
-module.exports.update = async ({ id }, data) => await prisma.user.update({ where: { id }, data })
+module.exports.update = async (id, imgProfile) => await prisma.user.update({ where: { id }, data: { imgProfile } })
 module.exports.delete = async ({ id }) => await prisma.user.delete({ where: { id } })
 
 // =========================================== CUSTOM REPOSITORY ===================================
@@ -20,3 +20,13 @@ module.exports.getMe = () => {}
 
 module.exports.findUserFacebook = async (facebookId) => await prisma.user.findFirst({ where: { facebookId } })
 module.exports.createUserLoginWithFacebook = async ({ facebookId, name }) => await prisma.user.create({ data: { facebookId, name } })
+
+module.exports.findUserGoogle = async (googleId) => await prisma.user.findFirst({ where: { googleId } })
+module.exports.registerGoogle = async (googleId, name, imgProfile) => await prisma.user.create({ data: { googleId, name, imgProfile } })
+
+module.exports.userGetProfile = async (id) => await prisma.user.findFirst({ where: { id } })
+
+module.exports.getReview = async (userId) =>
+    await prisma.review.findMany({ where: { userId }, include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true } })
+
+module.exports.getBookmark = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
