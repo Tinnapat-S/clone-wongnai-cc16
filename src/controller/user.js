@@ -198,6 +198,21 @@ module.exports.update = async (req, res, next) => {
     }
     return
 }
+module.exports.updateProfile = async (req, res, next) => {
+    try {
+        console.log(req.body)
+        // const imgProfile = {}
+        // if (req.files.imgProfile) {
+        const imgProfile = await uploadCloudinary(req.files.imgProfile[0].path)
+        fs.unlink(req.files.imgProfile[0].path)
+        // }
+        const user = await repo.user.update(+req.body.id, imgProfile)
+        res.status(200).json({ user })
+    } catch (err) {
+        next(err)
+    }
+}
+
 module.exports.delete = async (req, res, next) => {
     try {
         const { id } = req.params
