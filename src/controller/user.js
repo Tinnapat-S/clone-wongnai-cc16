@@ -18,7 +18,7 @@ module.exports.getAll = async (req, res, next) => {
 }
 module.exports.get = async (req, res, next) => {
     try {
-        console.log(req.params)
+        // console.log(req.params)
         const { id } = req.params
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
@@ -42,9 +42,9 @@ module.exports.login = async (req, res, next) => {
     try {
         const { username, password } = req.body
         // GET username from database
-        console.log(req.body)
+        // console.log(req.body, "******")
         const user = await repo.user.get(username)
-        console.log(user, "user")
+        // console.log(user, "user")
         if (!user) throw new CustomError("Username is wrong", "WRONG_INPUT", 400)
 
         // COMPARE password with database
@@ -53,6 +53,9 @@ module.exports.login = async (req, res, next) => {
 
         // DELETE KEY of password from user data
         delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
         // SIGN token from user data
         const token = utils.jwt.sign({ userId: user.id })
         res.status(200).json({ token, user: user })
@@ -91,6 +94,9 @@ module.exports.register = async (req, res, next) => {
         const user = await repo.user.create({ ...req.body, password: hashed })
         // DELETE KEY of password from user data
         delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
         // SIGN token from user data
         // console.log(user)
         console.log(user)
@@ -111,19 +117,60 @@ module.exports.registerFacebook = async (req, res, next) => {
         //     `https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=702344342107870&client_secret=57d3d0fdb5b6b7c565e43aab83bad656&fb_exchange_token=${req.body.accessToken}`,
         // )
         // console.log(response)
-        // const findUser = await repo.user.findUserFacebook(req.body.id)
+        const findUser = await repo.user.findUserFacebook(req.body.id)
 
-        // if (findUser) {
-        //     const token = utils.jwt.sign({ userId: findUser.id })
-        //     res.status(200).json({ user: findUser, token })
-        //     return
-        // }
-        // const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
-        // const token = utils.jwt.sign({ userId: user.id })
-        // console.log(user)
-        // res.status(200).json({ token, user })
-        res.status(200).json({ message: "SSS" })
+        if (findUser) {
+            const token = utils.jwt.sign({ userId: findUser.id })
+
+            delete findUser.password
+            delete findUser.createdAt
+            delete findUser.googleId
+            delete findUser.facebookId
+
+            res.status(200).json({ user: findUser, token })
+            return
+        }
+        const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
+        const token = utils.jwt.sign({ userId: user.id })
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+        res.status(200).json({ token, user })
+        // res.status(200).json({ message: "SSS" })
         return
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.registerGoogle = async (req, res, next) => {
+    try {
+        // console.log(req.body)
+        // console.log(req.body.wt.Ad)
+        const findUser = await repo.user.findUserGoogle(req.body.googleId)
+        if (!findUser) {
+            const user = await repo.user.registerGoogle(req.body.googleId, req.body.wt.Ad, req.body.profileObj.imageUrl)
+
+            const token = utils.jwt.sign({ userId: user.id })
+
+            delete user.password
+            delete user.createdAt
+            delete user.googleId
+            delete user.facebookId
+
+            res.status(200).json({ token, user })
+            return
+        }
+        // console.log("สมัครเเล้ว")
+        const token = utils.jwt.sign({ userId: findUser.id })
+
+        delete findUser.password
+        delete findUser.createdAt
+        delete findUser.googleId
+        delete findUser.facebookId
+
+        res.status(200).json({ user: findUser, token })
     } catch (err) {
         next(err)
     }
@@ -131,8 +178,19 @@ module.exports.registerFacebook = async (req, res, next) => {
 
 module.exports.update = async (req, res, next) => {
     try {
-        const { id } = req.params
-        const user = await repo.user.update(id, req.body)
+        const id = req.body.id
+        const data = {
+            name: req.body.name,
+            mobile: req.body.mobile,
+            gender: req.body.gender,
+            birthdate: req.user.birthdate,
+            imgProfile: req.body.imgProfile,
+        }
+        const user = await repo.user.update(id, data)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
 
         res.status(200).json({ user })
     } catch (err) {

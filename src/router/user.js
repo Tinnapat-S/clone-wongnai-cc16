@@ -4,6 +4,7 @@ const c = require("../controller")
 const authenticate = require("../middlewares/authenticate")
 const { validateRegister } = require("../middlewares/validators/validate-auth")
 const upload = require("../middlewares/upload")
+const { isOwn } = require("../middlewares/isOwn")
 
 const userRoute = express.Router()
 
@@ -13,8 +14,11 @@ userRoute.get("/:id", c.user.get) // ไม่ต้อง authen เพรา�
 userRoute.post("/register", upload.fields([{ name: "imgProfile", maxCount: 1 }]), validateRegister, c.user.register) //
 // userRoute.post("/register", validateRegister, c.user.register) //
 userRoute.post("/loginWithFace", c.user.registerFacebook) // register ได้เฉพาะของฮั่นตอนนี้
+
+userRoute.post("/loginWithGoogle", c.user.registerGoogle)
+
 userRoute.post("/login", c.user.login) //
-userRoute.patch("/:id", authenticate, c.user.update) //
+userRoute.patch("/", authenticate, isOwn, c.user.update) //
 userRoute.delete("/:id", authenticate, c.user.delete)
 
 module.exports = userRoute
