@@ -139,3 +139,23 @@ module.exports.delete = async (req, res, next) => {
     }
     return
 }
+
+module.exports.bookmark = async (req, res, next) => {
+    try {
+        console.log("test")
+        let id = 1
+        const { restaurantId } = req.body
+        const bookmarkExist = await repo.user.getBookmark({ userId: id, restaurantId })
+        if (bookmarkExist) {
+            await repo.user.deleteBookmark(bookmarkExist.id)
+            return res.status(200).json({ bookmark: false })
+        } else {
+            await repo.user.createBookmark({ userId: id, restaurantId })
+            return res.status(200).json({ bookmark: true })
+        }
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+    return
+}

@@ -4,7 +4,11 @@ const prisma = require("../config/prisma")
 module.exports.get = async (where) => await prisma.restaurant.findUnique({ where })
 module.exports.getAll = async () =>
     await prisma.restaurant.findMany({
-        include: { restaurantImages: { select: { id: true, img: true } }, category: { select: { categoryName: true } } },
+        include: {
+            restaurantImages: { select: { id: true, img: true } },
+            category: { select: { categoryName: true } },
+            bookmarks: { select: { userId: true } },
+        },
     })
 
 module.exports.getFilter = async (where) =>

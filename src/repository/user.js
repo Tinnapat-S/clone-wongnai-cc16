@@ -20,3 +20,7 @@ module.exports.getMe = () => {}
 
 module.exports.findUserFacebook = async (facebookId) => await prisma.user.findFirst({ where: { facebookId } })
 module.exports.createUserLoginWithFacebook = async ({ facebookId, name }) => await prisma.user.create({ data: { facebookId, name } })
+
+module.exports.createBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.create({ data: { userId, restaurantId } })
+module.exports.getBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.findFirst({ where: { userId, restaurantId } })
+module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })
