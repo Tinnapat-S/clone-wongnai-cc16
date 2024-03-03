@@ -11,8 +11,21 @@ module.exports.getAll = async (req, res, next) => {
         const districts = await repo.districts.getBangkokDistricts()
         const facilities = await repo.facilities.getAll()
         const categories = await repo.categories.getAll()
-        // console.log(districts)
+
         res.status(200).json({ restaurants, districts, facilities, categories })
+    } catch (err) {
+        next(err)
+    }
+    return
+}
+
+module.exports.getRestaurantsWithUser = async (req, res, next) => {
+    try {
+        if (!req.user) throw new CustomError("Not found user", "WRONG_INPUT", 400)
+
+        const restaurants = await repo.restaurants.getRestaurantsBookmarkByUserId(req.user.id)
+
+        res.status(200).json({ restaurants })
     } catch (err) {
         next(err)
     }

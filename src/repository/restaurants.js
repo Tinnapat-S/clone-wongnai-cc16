@@ -7,7 +7,6 @@ module.exports.getAll = async () =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
-            bookmarks: { select: { userId: true } },
         },
     })
 
@@ -15,4 +14,13 @@ module.exports.getFilter = async (where) =>
     await prisma.restaurant.findMany({
         where: where,
         include: { restaurantImages: { select: { id: true, img: true } }, category: { select: { categoryName: true } } },
+    })
+
+module.exports.getRestaurantsBookmarkByUserId = async (userId) =>
+    await prisma.restaurant.findMany({
+        include: {
+            restaurantImages: { select: { id: true, img: true } },
+            category: { select: { categoryName: true } },
+            bookmarks: { where: { userId } },
+        },
     })

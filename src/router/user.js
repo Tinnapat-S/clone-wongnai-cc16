@@ -21,7 +21,8 @@ userRoute.post("/login", c.user.login) //
 userRoute.patch("/", authenticate, isOwn, c.user.update) //
 userRoute.patch("/user-img", authenticate, upload.fields([{ name: "imgProfile", maxCount: 1 }]), isOwn, c.user.updateProfile) //
 userRoute.delete("/:id", authenticate, c.user.delete)
-//user bookmark
-userRoute.post("/bookmark", c.user.bookmark)
+
+//bookmark
+userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)
 
 module.exports = userRoute
