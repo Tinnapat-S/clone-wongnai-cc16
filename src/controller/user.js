@@ -201,12 +201,13 @@ module.exports.update = async (req, res, next) => {
 module.exports.updateProfile = async (req, res, next) => {
     try {
         console.log(req.body)
+        console.log(req.files.imgProfile)
         // const imgProfile = {}
         // if (req.files.imgProfile) {
         const imgProfile = await uploadCloudinary(req.files.imgProfile[0].path)
         fs.unlink(req.files.imgProfile[0].path)
         // }
-        const user = await repo.user.update(+req.body.id, imgProfile)
+        const user = await repo.user.update(+req.body.id, { imgProfile })
         res.status(200).json({ user })
     } catch (err) {
         next(err)
