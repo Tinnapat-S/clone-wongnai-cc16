@@ -9,12 +9,12 @@ const userRoute = express.Router()
 
 userRoute.get("/", c.user.getAll)
 userRoute.get("/me", authenticate, c.user.getMe) //
-userRoute.get("/:id", authenticate, c.user.get)
+userRoute.get("/:id", c.user.get) // ไม่ต้อง authen เพราะว่่าเข้าไปดูได้ทุกคน
 userRoute.post("/register", upload.fields([{ name: "imgProfile", maxCount: 1 }]), validateRegister, c.user.register) //
 // userRoute.post("/register", validateRegister, c.user.register) //
-userRoute.post("/loginWithFace", c.user.registerFacebook) //
+userRoute.post("/loginWithFace", c.user.registerFacebook) // register ได้เฉพาะของฮั่นตอนนี้
 userRoute.post("/login", c.user.login) //
-userRoute.put("/:id", c.user.update)
+userRoute.patch("/:id", authenticate, c.user.update) //
 userRoute.delete("/:id", authenticate, c.user.delete)
 
 module.exports = userRoute

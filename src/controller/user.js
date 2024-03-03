@@ -5,6 +5,7 @@ const { Role } = require("@prisma/client")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { execute } = require("../db")
+const axios = require("axios")
 
 module.exports.getAll = async (req, res, next) => {
     try {
@@ -20,8 +21,10 @@ module.exports.get = async (req, res, next) => {
         console.log(req.params)
         const { id } = req.params
         const user = await repo.user.userGetProfile(+id)
-        if (!user) return res.status(200).json({ message: "not found" })
-        res.status(200).json({ user })
+        if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
+        const reviews = await repo.user.getReview(+id)
+        const bookmarks = await repo.user.getBookmark(+id)
+        res.status(200).json({ user, reviews, bookmarks })
     } catch (err) {
         next(err)
     }
@@ -102,18 +105,24 @@ module.exports.register = async (req, res, next) => {
 }
 module.exports.registerFacebook = async (req, res, next) => {
     try {
-        const findUser = await repo.user.findUserFacebook(req.body.id)
+        console.log(req.body)
 
-        if (findUser) {
-            const token = utils.jwt.sign({ userId: findUser.id })
-            res.status(200).json({ user: findUser, token })
-            return
-        }
-        const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
-        const token = utils.jwt.sign({ userId: user.id })
-        console.log(user)
-        res.status(200).json({ token, user })
-        // res.status(200).json({ message: "SSS" })
+        // const response = await axios.get(
+        //     `https://graph.facebook.com/v6.0/oauth/access_token?grant_type=fb_exchange_token&client_id=702344342107870&client_secret=57d3d0fdb5b6b7c565e43aab83bad656&fb_exchange_token=${req.body.accessToken}`,
+        // )
+        // console.log(response)
+        // const findUser = await repo.user.findUserFacebook(req.body.id)
+
+        // if (findUser) {
+        //     const token = utils.jwt.sign({ userId: findUser.id })
+        //     res.status(200).json({ user: findUser, token })
+        //     return
+        // }
+        // const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
+        // const token = utils.jwt.sign({ userId: user.id })
+        // console.log(user)
+        // res.status(200).json({ token, user })
+        res.status(200).json({ message: "SSS" })
         return
     } catch (err) {
         next(err)
@@ -123,8 +132,7 @@ module.exports.registerFacebook = async (req, res, next) => {
 module.exports.update = async (req, res, next) => {
     try {
         const { id } = req.params
-        const { firstName, lastName } = req.body
-        const user = await repo.user.update({ id }, { firstName, lastName })
+        const user = await repo.user.update(id, req.body)
 
         res.status(200).json({ user })
     } catch (err) {
