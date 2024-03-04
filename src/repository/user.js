@@ -22,3 +22,15 @@ module.exports.findUserFacebook = async (facebookId) => await prisma.user.findFi
 module.exports.createUserLoginWithFacebook = async ({ facebookId, name }) => await prisma.user.create({ data: { facebookId, name } })
 
 module.exports.userGetProfile = async (id) => await prisma.user.findFirst({ where: { id } })
+
+module.exports.createReview = async (data) =>
+    await prisma.review.create({
+        data: {
+            userId: data.userId,
+            restaurantId: data.restaurantId,
+            star: data.star,
+            title: data.title,
+            description: data.description,
+            reviewImgs: { createMany: { data: [{ img: "asdf" }, { img: "asdf" }] } },
+        },
+    })

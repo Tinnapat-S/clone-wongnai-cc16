@@ -16,5 +16,6 @@ userRoute.post("/loginWithFace", c.user.registerFacebook) //
 userRoute.post("/login", c.user.login) //
 userRoute.put("/:id", c.user.update)
 userRoute.delete("/:id", authenticate, c.user.delete)
+userRoute.post("/createReview",c.user.createReview)
 
 module.exports = userRoute

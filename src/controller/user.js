@@ -142,3 +142,14 @@ module.exports.delete = async (req, res, next) => {
     }
     return
 }
+
+module.exports.createReview = async (req, res, next) => {
+   try{
+        const {userId, restaurantId, reviewImgs,star,title,description} = req.body
+        const review = await repo.user.createReview({userId, restaurantId, reviewImgs,star,title,description})
+        res.status(200).json({review})
+   } catch (err) {
+    next(err)
+}
+    return
+}
