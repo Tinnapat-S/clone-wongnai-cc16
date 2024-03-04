@@ -40,6 +40,8 @@ module.exports.createReview = async (data, img) =>
 
 module.exports.checkOwnerReview = async (userId, id) => await prisma.review.findFirst({ where: { userId, id } })
 module.exports.updateReview = async (data, id) => await prisma.review.update({ where: { id }, data })
+module.exports.deleteReviewImg = async (reviewId) => await prisma.reviewImg.deleteMany({ where: { reviewId } })
+module.exports.deleteReview = async (id) => await prisma.review.delete({ where: { id } })
 
 module.exports.getReview = async (userId) =>
     await prisma.review.findMany({ where: { userId }, include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true } })

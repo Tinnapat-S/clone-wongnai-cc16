@@ -270,3 +270,18 @@ module.exports.updateReviewImg = async (req, res, next) => {
         next(err)
     }
 }
+
+module.exports.deleteReview = async (req, res, next) => {
+    try {
+        console.log(req.params)
+        const deleteReviewImg = await repo.user.deleteReviewImg(+req.params.id)
+        console.log(deleteReviewImg)
+
+        const data = await repo.user.deleteReview(+req.params.id)
+        console.log(data)
+
+        res.status(204).json({ message: "deleted" })
+    } catch (err) {
+        next(err)
+    }
+}
