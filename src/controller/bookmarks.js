@@ -1,7 +1,6 @@
 const repo = require("../repository")
 module.exports.toggleBookmark = async (req, res, next) => {
     try {
-        console.log("pass")
         const { restaurantId } = req.body
         const bookmarkExist = await repo.user.getBookmark({ userId: req.user.id, restaurantId })
         if (bookmarkExist) {

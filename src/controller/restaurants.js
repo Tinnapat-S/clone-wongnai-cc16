@@ -34,10 +34,10 @@ module.exports.getRestaurantsWithUser = async (req, res, next) => {
 
 module.exports.getFilter = async (req, res, next) => {
     try {
-        //check params if not exist {} be return
         const filterData = req.query
         console.log(filterData, "params")
-        console.log(Object.keys(filterData))
+        //check params if not exist {} be return
+
         if (Object.keys(filterData)?.length == 0) {
             throw new CustomError("No filter", "400_BAD_REQUEST", 400)
         }
@@ -59,27 +59,30 @@ module.exports.getFilter = async (req, res, next) => {
                 filterConditions.push({ categoryId: { in: getCategories } })
             }
 
-            if (facilityId) {
-                const facilityIds = facilityId.map((id) => parseInt(id))
-                const restaurants = await prisma.restaurant.findMany({
-                    where: {
-                        facilitiesWithRestaurantId: {
-                            some: {
-                                facilityId: {
-                                    in: facilityIds,
-                                },
-                            },
-                        },
-                    },
-                })
-                console.log(restaurants)
-            }
+            const facilityIds = facilityId ? facilityId.map((id) => parseInt(id)) : null
             // if (facilityId) {
-            //     const getFacilities = facilityId.map((id) => ({ facilityId: parseInt(id) }))
-            //     //getFacilities == [{facilityId: 1},{facilityId: 2}]
-            //     console.log(getFacilities, "check")
+            //     const facilityIds = facilityId.map((id) => parseInt(id))
+            // const restaurants = await prisma.restaurant.findMany({
+            //     where: {
+            //         facilitiesWithRestaurantId: {
+            //             some: {
+            //                 facilityId: {
+            //                     in: facilityIds,
+            //                 },
+            //             },
+            //         },
+            //     },
+            // })
+            // console.log(restaurants)
+
+            // }
+
+            // if (facilityId) {
+            //     const getFacilitiesInt = facilityId.map((id) => ({ facilityId: parseInt(id) }))
+            //     //getFacilitiesInt == [{facilityId: 1},{facilityId: 2}]
+            //     console.log(getFacilitiesInt, "check")
             //     const facilities = await prisma.facilityWithRestaurantId.findMany({
-            //         where: { AND: getFacilities },
+            //         where: { AND: getFacilitiesInt },
             //         include: { facility: true, restaurant: true },
             //     })
             //     const test = facilities.map((facilities) => ({
@@ -89,10 +92,11 @@ module.exports.getFilter = async (req, res, next) => {
             //     filterConditions.push(...test)
             // }
 
-            // if (rating) {
-            //     const getRating = rating.map((id) => ({ reviewPoint: parseInt(id) }))
-            //     filterConditions.push(...getRating)
-            // }
+            if (rating) {
+                //rating is only 1 values in array
+                const ratingInt = parseInt(rating[0])
+                filterConditions.push({ reviewPoint: { in: [ratingInt] } })
+            }
             if (priceLength) {
                 // const getPrice = priceLength.map((id) => ({ priceLength: id }))
                 filterConditions.push({ priceLength: { in: priceLength } })
@@ -101,7 +105,22 @@ module.exports.getFilter = async (req, res, next) => {
             ///////////test
             // test == [{districtCode: 1001},{districtCode: 1002},{rating: 1},{priceLength: "฿฿฿"}]
             const restaurants = await prisma.restaurant.findMany({
-                where: { AND: filterConditions },
+                where: {
+                    AND: [
+                        ...filterConditions,
+                        facilityId
+                            ? {
+                                  facilitiesWithRestaurantId: {
+                                      some: {
+                                          facilityId: {
+                                              in: facilityIds,
+                                          },
+                                      },
+                                  },
+                              }
+                            : null,
+                    ].filter(Boolean),
+                },
                 include: {
                     restaurantImages: { select: { id: true, img: true } },
                     category: { select: { categoryName: true } },
