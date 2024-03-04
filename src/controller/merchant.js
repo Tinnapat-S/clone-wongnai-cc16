@@ -2,6 +2,7 @@ const repo = require("../repository")
 const utils = require("../utils")
 const { CustomError } = require("../config/error")
 const { Role } = require("@prisma/client")
+const { catchError } = require("../utils/catch-error");
 module.exports.getAll = async (req, res, next) => {
     try {
         res.status(200).json({ message: "testpass" })
@@ -13,8 +14,7 @@ module.exports.getAll = async (req, res, next) => {
     return
 }
 
-const repo = require("../repository");
-const { catchError } = require("../utils/catch-error");
+
 
 exports.getProvince = catchError(
     async (req, res, next) => {
