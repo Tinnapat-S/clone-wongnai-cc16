@@ -226,12 +226,47 @@ module.exports.delete = async (req, res, next) => {
 }
 
 module.exports.createReview = async (req, res, next) => {
-   try{
-        const {userId, restaurantId, reviewImgs,star,title,description} = req.body
-        const review = await repo.user.createReview({userId, restaurantId, reviewImgs,star,title,description})
-        res.status(200).json({review})
-   } catch (err) {
-    next(err)
-}
+    try {
+        // console.log(req.files.img)
+        // console.log(req.body, "body")
+        const ALLIMGE = []
+        for (let i of req.files.img) {
+            ALLIMGE.push({ img: await uploadCloudinary(i.path) })
+            fs.unlink(i.path)
+        }
+
+        // console.log(ALLIMGE)
+        req.body.userId = +req.user.id
+        req.body.restaurantId = +req.body.restaurantId
+        req.body.star = +req.body.star
+        const review = await repo.user.createReview(req.body, ALLIMGE)
+        res.status(200).json({ review })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
     return
+}
+
+module.exports.updateReview = async (req, res, next) => {
+    try {
+        const isOwn = await repo.user.checkOwnerReview(+req.user.id, +req.body.id)
+        if (!isOwn) {
+            throw new CustomError("not your", "WRONG_INPUT", 400)
+            return
+        }
+        const dataReview = { ...req.body }
+        delete dataReview.id
+        const data = await repo.user.updateReview(dataReview, req.body.id)
+        res.status(200).json({ message: "updated", data })
+    } catch (err) {
+        next(err)
+    }
+}
+module.exports.updateReviewImg = async (req, res, next) => {
+    try {
+        //
+    } catch (err) {
+        next(err)
+    }
 }

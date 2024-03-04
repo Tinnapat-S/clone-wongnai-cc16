@@ -26,7 +26,7 @@ module.exports.registerGoogle = async (googleId, name, imgProfile) => await pris
 
 module.exports.userGetProfile = async (id) => await prisma.user.findFirst({ where: { id } })
 
-module.exports.createReview = async (data) =>
+module.exports.createReview = async (data, img) =>
     await prisma.review.create({
         data: {
             userId: data.userId,
@@ -34,9 +34,13 @@ module.exports.createReview = async (data) =>
             star: data.star,
             title: data.title,
             description: data.description,
-            reviewImgs: { createMany: { data: [{ img: "asdf" }, { img: "asdf" }] } },
+            reviewImgs: { createMany: { data: img } },
         },
     })
+
+module.exports.checkOwnerReview = async (userId, id) => await prisma.review.findFirst({ where: { userId, id } })
+module.exports.updateReview = async (data, id) => await prisma.review.update({ where: { id }, data })
+
 module.exports.getReview = async (userId) =>
     await prisma.review.findMany({ where: { userId }, include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true } })
 
