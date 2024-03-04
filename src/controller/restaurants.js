@@ -75,7 +75,6 @@ module.exports.getFilter = async (req, res, next) => {
             //so we need to filterConditions , facilityId if u have it
 
             // test == [{districtCode: 1001},{districtCode: 1002},{rating: 1},{priceLength: "฿฿฿"}]
-            //>> const restaurants = await repo.restaurants.getFilter(filterConditions, facilityId)
             const restaurants = await repo.restaurants.getFilter(filterConditions, facilityIds)
             console.log(restaurants)
             return res.status(200).json({ restaurants })
