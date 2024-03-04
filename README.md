@@ -69,3 +69,26 @@ $ pnpx prisma migrate dev
 # To sync database depend on schema.prisma file without creating migration version
 $ pnpx prisma db push
 ```
+
+GET /user/me คือ ดึงของของที่เป็นของ user นั้นๆ
+BODY -
+RESPONSR {user}
+
+GET /user/:id คือ ข้อมูล user ตาม uesr_id เพื่อเอาไปทำหน้า profile
+BODY -
+RESPONSE {user, bookmarks, reviews}
+
+POST /user/register
+BODY {name, mobile, email, password, confirmPassword, gender, birthdate หรือใส่รูปมาเลยก็ได้}
+RESPONSE {user, token}
+
+POST /user/loginWithFace เจอ1ปัญหา คือ register ได้เฉพาะของฮั่น
+RESPONSE {user, token}
+
+POST /user/login
+BODY {username, password}
+RESPONSE {user, token}
+
+PATCH /user/:id update ข้อมูล user
+BODY {name, mobile, gender, birthdate หรือใส่รูปมาเลยก็ได้}
+RESPONSE {name, mobile, gender, birthdate หรือใส่รูปมาเลยก็ได้}

@@ -7,10 +7,10 @@ const subDistricts = require("../data/subDistricts.json")
 
 const seeding = async () => {
     try {
-        prisma.$transaction([
-            await prisma.province.createMany({ data: provinces }),
-            await prisma.district.createMany({ data: districts }),
-            await prisma.subDistrict.createMany({ data: subDistricts }),
+        await prisma.$transaction([
+            prisma.province.createMany({ data: provinces }),
+            prisma.district.createMany({ data: districts }),
+            prisma.subDistrict.createMany({ data: subDistricts }),
         ])
     } catch (err) {
         console.log(err)
