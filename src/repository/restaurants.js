@@ -10,10 +10,28 @@ module.exports.getAll = async () =>
         },
     })
 
-module.exports.getFilter = async (where) =>
+module.exports.getFilter = async (filterConditions, facilityId) =>
     await prisma.restaurant.findMany({
-        where: where,
-        include: { restaurantImages: { select: { id: true, img: true } }, category: { select: { categoryName: true } } },
+        where: {
+            AND: [
+                ...filterConditions,
+                facilityId
+                    ? {
+                          facilitiesWithRestaurantId: {
+                              some: {
+                                  facilityId: {
+                                      in: facilityId,
+                                  },
+                              },
+                          },
+                      }
+                    : null,
+            ].filter(Boolean),
+        },
+        include: {
+            restaurantImages: { select: { id: true, img: true } },
+            category: { select: { categoryName: true } },
+        },
     })
 
 module.exports.getRestaurantsBookmarkByUserId = async (userId) =>

@@ -60,37 +60,6 @@ module.exports.getFilter = async (req, res, next) => {
             }
 
             const facilityIds = facilityId ? facilityId.map((id) => parseInt(id)) : null
-            // if (facilityId) {
-            //     const facilityIds = facilityId.map((id) => parseInt(id))
-            // const restaurants = await prisma.restaurant.findMany({
-            //     where: {
-            //         facilitiesWithRestaurantId: {
-            //             some: {
-            //                 facilityId: {
-            //                     in: facilityIds,
-            //                 },
-            //             },
-            //         },
-            //     },
-            // })
-            // console.log(restaurants)
-
-            // }
-
-            // if (facilityId) {
-            //     const getFacilitiesInt = facilityId.map((id) => ({ facilityId: parseInt(id) }))
-            //     //getFacilitiesInt == [{facilityId: 1},{facilityId: 2}]
-            //     console.log(getFacilitiesInt, "check")
-            //     const facilities = await prisma.facilityWithRestaurantId.findMany({
-            //         where: { AND: getFacilitiesInt },
-            //         include: { facility: true, restaurant: true },
-            //     })
-            //     const test = facilities.map((facilities) => ({
-            //         facility: facilities.facility.facilityName,
-            //         restaurant: facilities.restaurant,
-            //     }))
-            //     filterConditions.push(...test)
-            // }
 
             if (rating) {
                 //rating is only 1 values in array
@@ -102,30 +71,12 @@ module.exports.getFilter = async (req, res, next) => {
                 filterConditions.push({ priceLength: { in: priceLength } })
             }
             console.log(filterConditions, "filterConditions")
-            ///////////test
+
+            //so we need to filterConditions , facilityId if u have it
+
             // test == [{districtCode: 1001},{districtCode: 1002},{rating: 1},{priceLength: "฿฿฿"}]
-            const restaurants = await prisma.restaurant.findMany({
-                where: {
-                    AND: [
-                        ...filterConditions,
-                        facilityId
-                            ? {
-                                  facilitiesWithRestaurantId: {
-                                      some: {
-                                          facilityId: {
-                                              in: facilityIds,
-                                          },
-                                      },
-                                  },
-                              }
-                            : null,
-                    ].filter(Boolean),
-                },
-                include: {
-                    restaurantImages: { select: { id: true, img: true } },
-                    category: { select: { categoryName: true } },
-                },
-            })
+            //>> const restaurants = await repo.restaurants.getFilter(filterConditions, facilityId)
+            const restaurants = await repo.restaurants.getFilter(filterConditions, facilityIds)
             console.log(restaurants)
             return res.status(200).json({ restaurants })
             //raw
@@ -133,9 +84,6 @@ module.exports.getFilter = async (req, res, next) => {
             //     await prisma.$queryRaw`select r.id, restaurant_name, merchant_id, r.subtitle, lat,lng, review_point,review_count,verify,is_open,mobile,email,address,district_id,price_length,category_id from restaurants r inner join facilities_with_restaurant_id fr on r.id = fr.restaurantId inner join facilities f on fr.facility_id = f.id inner join districts d on r.district_id = d.district_code where r.review_point = 1 or r.price_length = "฿฿฿"
             // group by r.id;`
         }
-        // return res.status(400).json({ restaurant: [] })
-
-        //const restaurants = await repo.restaurants.getFilter(params)
     } catch (err) {
         console.log(err)
         next(err)
