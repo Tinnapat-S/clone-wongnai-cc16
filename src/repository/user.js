@@ -29,4 +29,9 @@ module.exports.userGetProfile = async (id) => await prisma.user.findFirst({ wher
 module.exports.getReview = async (userId) =>
     await prisma.review.findMany({ where: { userId }, include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true } })
 
-module.exports.getBookmark = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
+//module.exports.getBookmark = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
+
+//========TIN======
+module.exports.createBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.create({ data: { userId, restaurantId } })
+module.exports.getBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.findFirst({ where: { userId, restaurantId } })
+module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })

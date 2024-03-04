@@ -14,7 +14,7 @@ module.exports.httpCode = {
     "403_FORBIDDEN": 403,
     "404_NOT_FOUND": 404,
     "405_METHOD_NOT_ALLOWED": 405,
-    "409_CONFILCT": 409,
+    "409_CONFLICT": 409,
 
     "500_INTERNAL_SERVER_ERROR": 500,
 }
