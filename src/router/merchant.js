@@ -1,10 +1,10 @@
 const express = require("express")
+const controller = require("../controller")
 
-const c = require("../controller")
-const authenticate = require("../middlewares/authenticate")
+const merchRoute = express.Router()
 
-const merchantRoute = express.Router()
+merchRoute.get('/province', controller.merchant.getProvince)
+merchRoute.post('/district', controller.merchant.getDistrict)
+merchRoute.post('/sub-district', controller.merchant.getSubDistrict)
 
-merchantRoute.get("/", c.merchant.getAll)
-
-module.exports = merchantRoute
+module.exports = merchRoute
