@@ -50,5 +50,6 @@ module.exports.getReview = async (userId) =>
 
 //========TIN======
 module.exports.createBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.create({ data: { userId, restaurantId } })
-module.exports.getBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.findFirst({ where: { userId, restaurantId } })
+module.exports.getBookmark = async ({ userId, restaurantId }) =>
+    await prisma.bookmark.findFirst({ where: { userId, restaurantId }, include: { restaurant: true } })
 module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })
