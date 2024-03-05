@@ -10,7 +10,7 @@ module.exports.getAll = async () =>
         },
     })
 
-module.exports.getFilter = async (filterConditions, facilityId) =>
+module.exports.getFilter = async (filterConditions, facilityId, userId) =>
     await prisma.restaurant.findMany({
         where: {
             AND: [
