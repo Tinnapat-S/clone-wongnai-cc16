@@ -32,7 +32,14 @@ module.exports.get = async (req, res, next) => {
 }
 module.exports.getMe = async (req, res, next) => {
     try {
-        res.status(200).json({ user: req.user })
+        const { id } = req.user
+        const user = await repo.user.userGetProfile(+id)
+        if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
+        const reviews = await repo.user.getReview(+id)
+        const bookmarks = await repo.user.getBookmark(+id)
+        res.status(200).json({ user, reviews, bookmarks })
+
+        // res.status(200).json({ user: req.user })
     } catch (err) {
         next(err)
     }
