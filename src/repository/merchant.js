@@ -9,6 +9,8 @@ exports.getDistrict = (provinceCode) => prisma.district.findMany({ where: { prov
 
 exports.getSubDistrict = (districtCode) => prisma.subDistrict.findMany({ where: { districtCode } })
 
+exports.merchantRegister = (data) => prisma.restaurant.create({ data })
+
 // exports.getCodeByName = (provinceName) => prisma.district.findFirst({
 //     where: {
 //         OR: [

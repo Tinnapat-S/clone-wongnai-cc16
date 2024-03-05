@@ -15,7 +15,6 @@ module.exports.getAll = async (req, res, next) => {
 }
 
 
-
 exports.getProvince = catchError(
     async (req, res, next) => {
         const province = await repo.merchant.getProvince()
@@ -45,7 +44,22 @@ exports.getSubDistrict = catchError(
     }
 )
 
+exports.getCategory = catchError(
+    async (req, res, next) => {
+        const categories = await repo.categories.getAll()
+        res.status(200).json({ categories })
+    }
+)
 
+exports.register = catchError(
+    async (req, res, next) => {
+        req.body.subDistrictCode = req.body.subdistrictCode
+        delete req.body.subdistrictCode
+
+        const newMerchant = await repo.merchant.merchantRegister(req.body)
+        res.status(200).json({ newMerchant })
+    }
+)
 // exports.getCodeByName = catchError(
 //     async (req, res, next) => { 
 //         const 
