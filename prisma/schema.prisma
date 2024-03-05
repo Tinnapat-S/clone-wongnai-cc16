@@ -149,6 +149,7 @@ model Restaurant {
   isOpen          Boolean     @default(false) @map("is_open")
   mobile          String      @unique @db.VarChar(10)
   email           String?     @unique @db.VarChar(50)
+  profileImg      String?     @map("profile_img") @db.VarChar(256)
   // 
   address         String      @db.VarChar(200)
   districtCode    Int         @map("district_id")
