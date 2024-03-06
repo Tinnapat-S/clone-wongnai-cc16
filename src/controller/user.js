@@ -185,16 +185,29 @@ module.exports.registerGoogle = async (req, res, next) => {
 
 module.exports.update = async (req, res, next) => {
     try {
-        const id = req.body.id
-        const data = {
-            name: req.body.name,
-            mobile: req.body.mobile,
-            gender: req.body.gender,
-            birthdate: req.body.birthdate,
-            imgProfile: req.body.imgProfile,
+        // const id = req.body.id
+        // const data = {
+        //     name: req.body.name,
+        //     mobile: req.body.mobile,
+        //     gender: req.body.gender,
+        //     birthdate: req.body.birthdate,
+        //     imgProfile: req.body.imgProfile,
+        // }
+        if (req.body.birthdate) {
+            req.body.birthdate = req.body.birthdate + "T12:00:00.000Z"
         }
-        console.log("req.body.birthdate", req.body.birthdate)
-        const user = await repo.user.update(id, data)
+        console.log(req.body.mobile)
+        if (req.body.mobile) {
+            const e = await repo.user.mobileIsDupplicate(req.body.mobile)
+            console.log(e)
+            if (e) {
+                throw new CustomError("mobile invalid", "WRONG_INPUT", 400)
+                return
+            }
+        }
+        // console.log("req.body.birthdate", req.body.birthdate)
+        // console.log(req.user.id, "req.user.id")
+        const user = await repo.user.update(req.user.id, req.body)
         delete user.password
         delete user.createdAt
         delete user.googleId
