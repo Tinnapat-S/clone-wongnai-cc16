@@ -36,7 +36,7 @@ module.exports.getMe = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmark(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
         res.status(200).json({ user, reviews, bookmarks })
 
         // res.status(200).json({ user: req.user })
@@ -190,9 +190,10 @@ module.exports.update = async (req, res, next) => {
             name: req.body.name,
             mobile: req.body.mobile,
             gender: req.body.gender,
-            birthdate: req.user.birthdate,
+            birthdate: req.body.birthdate,
             imgProfile: req.body.imgProfile,
         }
+        console.log("req.body.birthdate", req.body.birthdate)
         const user = await repo.user.update(id, data)
         delete user.password
         delete user.createdAt
