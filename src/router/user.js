@@ -19,6 +19,7 @@ userRoute.post("/loginWithGoogle", c.user.registerGoogle)
 
 userRoute.post("/login", c.user.login) //
 userRoute.patch("/", authenticate, c.user.update) //
+userRoute.patch("/password", authenticate, c.user.updatePassword) //
 userRoute.patch("/user-img", authenticate, upload.fields([{ name: "imgProfile", maxCount: 1 }]), isOwn, c.user.updateProfile) //
 userRoute.delete("/:id", authenticate, c.user.delete)
 userRoute.post("/review", authenticate, upload.fields([{ name: "img" }]), c.user.createReview)

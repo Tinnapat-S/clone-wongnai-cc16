@@ -219,6 +219,27 @@ module.exports.update = async (req, res, next) => {
     }
     return
 }
+
+module.exports.updatePassword = async (req, res, next) => {
+    try {
+        if (req.body.newPassword != req.body.confirmPassword) {
+            throw new CustomError("new password and contirm password invalid", "WRONG_INPUT", 400)
+        }
+        const checkpassword = await repo.user.getPassword(req.user.id)
+        const pass = await utils.bcrypt.compare(req.body.password, checkpassword.password)
+        if (!pass) {
+            throw new CustomError("password invalid", "WRONG_INPUT", 400)
+        }
+
+        const password = await utils.bcrypt.hashed(req.body.newPassword)
+        await repo.user.update(req.user.id, { password })
+
+        res.status(201).json({ message: "success" })
+    } catch (error) {
+        next(error)
+    }
+}
+
 module.exports.updateMobile = async (req, res, next) => {
     try {
         const id = req.body.id

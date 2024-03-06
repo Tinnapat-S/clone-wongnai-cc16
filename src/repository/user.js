@@ -10,6 +10,7 @@ module.exports.get = async (username) =>
 module.exports.getAll = async () => await prisma.user.findMany()
 module.exports.create = async (data) => await prisma.user.create({ data })
 module.exports.update = async (id, data) => await prisma.user.update({ where: { id }, data })
+module.exports.getPassword = async (id) => await prisma.user.findFirst({ where: { id } })
 module.exports.delete = async ({ id }) => await prisma.user.delete({ where: { id } })
 
 // =========================================== CUSTOM REPOSITORY ===================================
@@ -48,7 +49,11 @@ module.exports.deleteReviewImg = async (reviewId) => await prisma.reviewImg.dele
 module.exports.deleteReview = async (id) => await prisma.review.delete({ where: { id } })
 
 module.exports.getReview = async (userId) =>
-    await prisma.review.findMany({ where: { userId }, include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true } })
+    await prisma.review.findMany({
+        where: { userId },
+        include: { restaurant: { include: { restaurantImages: true } }, reviewImgs: true },
+        orderBy: { createdAt: "desc" },
+    })
 
 //module.exports.getBookmark = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
 
