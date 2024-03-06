@@ -17,6 +17,10 @@ module.exports.emailIsDuplicate = async (email) => await prisma.user.findFirst({
 module.exports.mobileIsDupplicate = async (mobile) => await prisma.user.findFirst({ where: { mobile } })
 
 module.exports.getMe = () => {}
+module.exports.checkMobile = (mobile) =>
+    prisma.user.findFirst({
+        where: { mobile },
+    })
 
 module.exports.findUserFacebook = async (facebookId) => await prisma.user.findFirst({ where: { facebookId } })
 module.exports.createUserLoginWithFacebook = async ({ facebookId, name }) => await prisma.user.create({ data: { facebookId, name } })
@@ -52,6 +56,5 @@ module.exports.getReview = async (userId) =>
 module.exports.createBookmark = async ({ userId, restaurantId }) => await prisma.bookmark.create({ data: { userId, restaurantId } })
 module.exports.getBookmark = async ({ userId, restaurantId }) =>
     await prisma.bookmark.findFirst({ where: { userId, restaurantId }, include: { restaurant: true } })
-module.exports.getBookmarkById = async ({ userId, restaurantId }) =>
-    await prisma.bookmark.findMany({ where: { userId, restaurantId }, include: { restaurant: true } })
+module.exports.getBookmarkById = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
 module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })

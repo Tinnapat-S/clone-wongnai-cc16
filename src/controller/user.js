@@ -23,7 +23,7 @@ module.exports.get = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmark(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
         res.status(200).json({ user, reviews, bookmarks })
     } catch (err) {
         next(err)
@@ -195,6 +195,30 @@ module.exports.update = async (req, res, next) => {
         }
         console.log("req.body.birthdate", req.body.birthdate)
         const user = await repo.user.update(id, data)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+
+        res.status(200).json({ user })
+    } catch (err) {
+        next(err)
+    }
+    return
+}
+module.exports.updateMobile = async (req, res, next) => {
+    try {
+        const id = req.body.id
+
+        const checkMobile = await repo.user.checkMobile(req.body.mobile)
+        console.log("checkMobile", checkMobile)
+        if (checkMobile) {
+            throw new CustomError("mobile invalid", "WRONG_INPUT", 400)
+            return
+        }
+
+        console.log("req.body.birthdate", req.body.birthdate)
+        const user = await repo.user.update(id, { mobile: req.body.mobile })
         delete user.password
         delete user.createdAt
         delete user.googleId
