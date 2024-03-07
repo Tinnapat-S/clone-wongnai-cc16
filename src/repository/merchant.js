@@ -1,4 +1,4 @@
-const prisma = require('../models/prisma')
+const prisma = require("../models/prisma")
 // const { catchError } = require('../utils/catch-error')
 
 exports.findUserByUsernameOrMobile = usernameOrMobile =>
@@ -31,9 +31,11 @@ exports.findUserById = id => prisma.merchant.findUnique({ where: { id } });
 //         },
 //     })
 
-exports.getProvince = () => prisma.province.findMany(
-    // { where: { id: 1 } }
-)
+exports.getProvince = () =>
+    prisma.province
+        .findMany
+        // { where: { id: 1 } }
+        ()
 
 exports.getDistrict = (provinceCode) => prisma.district.findMany({ where: { provinceCode } })
 
@@ -48,3 +50,7 @@ exports.getSubDistrict = (districtCode) => prisma.subDistrict.findMany({ where: 
 //     }
 // })
 
+exports.createMenu = (data) => prisma.menu.create({ data })
+exports.deleteMenu = (id) => prisma.menu.delete({ where: { id } })
+exports.updateMenu = (id, data) => prisma.menu.update({ where: { id }, data })
+exports.updateMenuImg = (id, img) => prisma.menu.update({ where: { id }, data: { img } })
