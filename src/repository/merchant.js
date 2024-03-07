@@ -22,8 +22,8 @@ exports.findUserByUsernameOrMobile = usernameOrMobile =>
     return merchant;
   };
 
-exports.createUser = data => prisma.user.create({ data });
-
+exports.createUser = data => prisma.merchant.create({ data });
+exports.findUserById = id => prisma.merchant.findUnique({ where: { id } });
 // module.exports.get = async (username) =>
 //     await prisma.merchant.findFirst({
 //         where: {

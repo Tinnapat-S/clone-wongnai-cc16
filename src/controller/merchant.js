@@ -47,6 +47,25 @@ exports.getSubDistrict = catchError(
     }
 )
 
+exports.register = catchError(async (req, res, next) => {
+    const existsUser = await repo.merchant.findUserByUsernameOrMobile(
+      req.body.username || req.body.mobile
+    );
+  
+    if (existsUser) {
+      createError('USERNAME_OR_MOBILE_IN_USE', 400);
+    }
+  
+    req.body.password = await utils.bcrypt.hashed(req.body.password);
+  
+    const newUser = await repo.merchant.createUser(req.body);
+    const payload = { userId: newUser.id };
+    const accessToken = utils.jwt.sign(payload);
+    delete newUser.password;
+  
+    res.status(201).json({ accessToken, newUser });
+  });
+
 exports.login = catchError(async (req, res, next) => {
     const existsUser = await repo.merchant.findUserByUsernameOrMobile(
       req.body.usernameOrMobile
