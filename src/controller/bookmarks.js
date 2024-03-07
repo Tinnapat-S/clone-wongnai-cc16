@@ -16,3 +16,12 @@ module.exports.toggleBookmark = async (req, res, next) => {
     }
     return
 }
+
+module.exports.getBookmark = async (req, res, next) => {
+    try {
+        const bookmarks = await repo.user.getBookmarksByUserId(req.user.id)
+        res.status(200).json({ bookmarks })
+    } catch (err) {
+        next(err)
+    }
+}

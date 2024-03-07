@@ -28,5 +28,6 @@ userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c
 
 //bookmark
 userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)
+userRoute.get("/bookmark/:id", authenticate, c.user.getBookmark)
 
 module.exports = userRoute

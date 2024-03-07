@@ -292,3 +292,18 @@ module.exports.deleteReview = async (req, res, next) => {
         next(err)
     }
 }
+
+module.exports.getBookmark = async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const bookmarks = await repo.user.getBookmark({ userId: req.user.id, restaurantId: parseInt(id) })
+        if (bookmarks) {
+            res.status(200).json({ bookmarks: true })
+        } else {
+            res.status(200).json({ bookmarks: false })
+        }
+    } catch (err) {
+        next(err)
+    }
+}
