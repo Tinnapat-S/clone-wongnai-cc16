@@ -18,6 +18,9 @@ const server = http.createServer(app)
 
 restApiServer(app)
 
+//
+//
+//
 const cors = require("cors")
 const { Server } = require("socket.io")
 const chat = express()
@@ -30,38 +33,35 @@ const io = new Server(chatServer, {
     },
 })
 chat.use(cors())
-// io.on("connection", (socket) => {
-//     console.log("a user connected")
-// })
-// const onlineUser = {}
-// io.use((socket, next) => {
-//     const userId = socket.handshake.auth.sender
-//     onlineUser[userId] = socket.id
-//     next()
-// })
-// io.on("connection", (socket) => {
-//     console.log(onlineUser, "check online user")
-//     socket.on("message", (msg) => {
-//         // database
-//         // io.emit("received", { msg, ...socket.handshake.auth })
-//         io.to([onlineUser["1"], onlineUser["2"]]).emit("received", { msg })
-//         console.log(socket.handshake.auth)
-//         // ได้ message ออกมา
-//         // console.log(msg)
-//         // console.log(socket.handshake.auth)
-//         // return socket.handshake.auth
-//     })
+io.on("connection", (socket) => {
+    console.log("a user connected")
+})
+const onlineUser = {}
+io.use((socket, next) => {
+    const userId = socket.handshake.auth.sender
+    console.log(socket.handshake.auth)
+    // const roomId = socket.handshake.auth.room
+    onlineUser[userId] = socket.id
+    // onlineUser[roomId] = socket.id
+    next()
+})
+io.on("connection", (socket) => {
+    console.log(onlineUser, "check online user")
+    socket.on("message", (msg) => {
+        io.to([onlineUser[socket.handshake.auth.sender], onlineUser[msg.received]]).emit("received", { ...msg })
+    })
 
-//     console.log("a user connected")
-//     socket.on("disconnect", () => {
-//         console.log("user disconnected")
-//     })
-// })
-// chat.get("/", () => {
-//     console.log("first")
-// })
-// // chat.post
-// chatServer.listen(8888, () => console.log(8888, "port"))
+    console.log("a user connected")
+    socket.on("disconnect", () => {
+        console.log("user disconnected")
+    })
+})
+chat.get("/", () => {
+    console.log("first")
+})
+chatServer.listen(8888, () => console.log(8888, "port"))
+//
+//
 
 //=====================================================Listening Zone
 console.log(`API DOCS ON:  http://${host}:${port}/docs`)
