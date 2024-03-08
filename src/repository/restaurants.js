@@ -81,6 +81,11 @@ module.exports.getRestaurantById = async (id) =>
                     facility: { select: { facilityName: true } },
                 },
             },
+            reviews: {
+                include: {
+                    user: true,
+                },
+            },
         },
     })
 

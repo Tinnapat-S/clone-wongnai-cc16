@@ -43,6 +43,7 @@ model User {
 
   reviews   Review[]
   bookmarks Bookmark[]
+  chats     Chat[]
 
   @@map("users")
 }
@@ -168,6 +169,7 @@ model Restaurant {
   bookmarks                  Bookmark[]
   openHours                  OpenHours[]
   facilitiesWithRestaurantId FacilityWithRestaurantId[]
+  chats                      Chat[]
 
   @@map("restaurants")
 }
@@ -269,4 +271,19 @@ model Bookmark {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 
   @@map("bookmarks")
+}
+
+enum Roles {
+  USER
+  RESTAURANT
+}
+
+model Chat {
+  id           Int        @id @default(autoincrement())
+  userId       Int        @map("user_id")
+  userid       User       @relation(fields: [userId], references: [id])
+  restaurantId Int        @map("restaurant_id")
+  restaurantid Restaurant @relation(fields: [restaurantId], references: [id])
+  message      String     @db.VarChar(100)
+  sender       Roles
 }
