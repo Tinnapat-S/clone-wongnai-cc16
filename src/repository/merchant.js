@@ -1,4 +1,4 @@
-const prisma = require('../models/prisma')
+const prisma = require("../models/prisma")
 // const { catchError } = require('../utils/catch-error')
 
 exports.getAllProvince = () => prisma.province.findMany(    // { where: { id: 1 } }

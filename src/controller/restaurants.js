@@ -4,6 +4,8 @@ const { CustomError } = require("../config/error")
 const { Role } = require("@prisma/client")
 const { district } = require("../config/prisma")
 const prisma = require("../config/prisma")
+const { uploadCloudinary } = require("../services/upload-cloudinary")
+const fs = require("fs/promises")
 
 module.exports.getAll = async (req, res, next) => {
     try {
@@ -36,11 +38,7 @@ module.exports.getFilter = async (req, res, next) => {
     try {
         const filterData = req.query
         console.log(filterData, "params")
-        //check params if not exist {} be return
 
-        if (Object.keys(filterData)?.length == 0) {
-            throw new CustomError("No filter", "400_BAD_REQUEST", 400)
-        }
         const { districtId, facilityId, rating, priceLength, categoryId } = filterData
 
         if (districtId || facilityId || rating || priceLength || categoryId) {
@@ -48,7 +46,7 @@ module.exports.getFilter = async (req, res, next) => {
             if (districtId) {
                 const getDistricts = districtId.map((id) => ({ id: parseInt(id) }))
                 const districts = await prisma.district.findMany({ where: { OR: getDistricts } })
-                // console.log(districts, "test")
+
                 const districtCodes = districts.map((district) => district.districtCode)
                 //[1001,1003] //พระนคร หนองจอก
                 filterConditions.push({ districtCode: { in: districtCodes } })
@@ -70,21 +68,55 @@ module.exports.getFilter = async (req, res, next) => {
                 // const getPrice = priceLength.map((id) => ({ priceLength: id }))
                 filterConditions.push({ priceLength: { in: priceLength } })
             }
-            console.log(filterConditions, "filterConditions")
-
-            //so we need to filterConditions , facilityId if u have it
 
             // test == [{districtCode: 1001},{districtCode: 1002},{rating: 1},{priceLength: "฿฿฿"}]
-            const restaurants = await repo.restaurants.getFilter(filterConditions, facilityIds)
-            console.log(restaurants)
-            return res.status(200).json({ restaurants })
-            //raw
-            // const restaurants =
-            //     await prisma.$queryRaw`select r.id, restaurant_name, merchant_id, r.subtitle, lat,lng, review_point,review_count,verify,is_open,mobile,email,address,district_id,price_length,category_id from restaurants r inner join facilities_with_restaurant_id fr on r.id = fr.restaurantId inner join facilities f on fr.facility_id = f.id inner join districts d on r.district_id = d.district_code where r.review_point = 1 or r.price_length = "฿฿฿"
-            // group by r.id;`
+            const restaurants = await repo.restaurants.getFilter(filterConditions, facilityIds, req.user?.id) // id change
+
+            res.status(200).json({ restaurants })
         }
+    } catch (err) {
+        console.log(err, "here err")
+        next(err)
+    }
+}
+
+module.exports.getRestaurantById = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const restaurant = await repo.restaurants.getRestaurantById(parseInt(id))
+        res.status(200).json({ restaurant })
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.uploadRestaurantImg = async (req, res, next) => {
+    try {
+        const { restaurantId } = req.params
+        // console.log(req.files.img, " req.files.img")
+        const array = []
+        for (let i of req.files.img) {
+            array.push({ img: await uploadCloudinary(i.path), restaurantId: +restaurantId })
+            fs.unlink(i.path)
+        }
+
+        console.log(array)
+        const img = await repo.restaurants.uploadImg(array)
+        const data = await repo.restaurants.restaurantImg(+restaurantId)
+        res.status(200).json({ data })
     } catch (err) {
         console.log(err)
         next(err)
+    }
+}
+
+module.exports.deleteRestaurantImg = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        await repo.restaurants.deleteRestaurantImg(+id)
+        res.status(200).json({ msg: "delete successful " })
+    } catch (error) {
+        console.log(error)
+        next(error)
     }
 }
