@@ -23,7 +23,7 @@ module.exports.get = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmark(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
         res.status(200).json({ user, reviews, bookmarks })
     } catch (err) {
         next(err)
@@ -36,7 +36,13 @@ module.exports.getMe = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmarkById(+id)
+        const bookmarks = await repo.user.getBookmark(+id)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+        user.role = "USER"
+
         res.status(200).json({ user, reviews, bookmarks })
 
         // res.status(200).json({ user: req.user })
@@ -63,6 +69,7 @@ module.exports.login = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         const token = utils.jwt.sign({ userId: user.id })
         res.status(200).json({ token, user: user })
@@ -104,6 +111,7 @@ module.exports.register = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         // console.log(user)
         console.log(user)
@@ -165,6 +173,7 @@ module.exports.registerGoogle = async (req, res, next) => {
             delete user.createdAt
             delete user.googleId
             delete user.facebookId
+            user.role = "USER"
 
             res.status(200).json({ token, user })
             return
@@ -176,7 +185,7 @@ module.exports.registerGoogle = async (req, res, next) => {
         delete findUser.createdAt
         delete findUser.googleId
         delete findUser.facebookId
-
+        findUser.role = "USER"
         res.status(200).json({ user: findUser, token })
     } catch (err) {
         next(err)
@@ -185,16 +194,74 @@ module.exports.registerGoogle = async (req, res, next) => {
 
 module.exports.update = async (req, res, next) => {
     try {
-        const id = req.body.id
-        const data = {
-            name: req.body.name,
-            mobile: req.body.mobile,
-            gender: req.body.gender,
-            birthdate: req.body.birthdate,
-            imgProfile: req.body.imgProfile,
+        // const id = req.body.id
+        // const data = {
+        //     name: req.body.name,
+        //     mobile: req.body.mobile,
+        //     gender: req.body.gender,
+        //     birthdate: req.body.birthdate,
+        //     imgProfile: req.body.imgProfile,
+        // }
+        if (req.body.birthdate) {
+            req.body.birthdate = req.body.birthdate + "T12:00:00.000Z"
         }
+        console.log(req.body.mobile)
+        if (req.body.mobile) {
+            const e = await repo.user.mobileIsDupplicate(req.body.mobile)
+            console.log(e)
+            if (e) {
+                throw new CustomError("mobile invalid", "WRONG_INPUT", 400)
+                return
+            }
+        }
+        // console.log("req.body.birthdate", req.body.birthdate)
+        // console.log(req.user.id, "req.user.id")
+        const user = await repo.user.update(req.user.id, req.body)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+
+        res.status(200).json({ user })
+    } catch (err) {
+        next(err)
+    }
+    return
+}
+
+module.exports.updatePassword = async (req, res, next) => {
+    try {
+        if (req.body.newPassword != req.body.confirmPassword) {
+            throw new CustomError("new password and contirm password invalid", "WRONG_INPUT", 400)
+        }
+        const checkpassword = await repo.user.getPassword(req.user.id)
+        const pass = await utils.bcrypt.compare(req.body.password, checkpassword.password)
+        if (!pass) {
+            throw new CustomError("password invalid", "WRONG_INPUT", 400)
+        }
+
+        const password = await utils.bcrypt.hashed(req.body.newPassword)
+        await repo.user.update(req.user.id, { password })
+
+        res.status(201).json({ message: "success" })
+    } catch (error) {
+        next(error)
+    }
+}
+
+module.exports.updateMobile = async (req, res, next) => {
+    try {
+        const id = req.body.id
+
+        const checkMobile = await repo.user.checkMobile(req.body.mobile)
+        console.log("checkMobile", checkMobile)
+        if (checkMobile) {
+            throw new CustomError("mobile invalid", "WRONG_INPUT", 400)
+            return
+        }
+
         console.log("req.body.birthdate", req.body.birthdate)
-        const user = await repo.user.update(id, data)
+        const user = await repo.user.update(id, { mobile: req.body.mobile })
         delete user.password
         delete user.createdAt
         delete user.googleId
@@ -289,6 +356,21 @@ module.exports.deleteReview = async (req, res, next) => {
         console.log(data)
 
         res.status(204).json({ message: "deleted" })
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.getBookmark = async (req, res, next) => {
+    try {
+        const { id } = req.params
+
+        const bookmarks = await repo.user.getBookmark({ userId: req.user.id, restaurantId: parseInt(id) })
+        if (bookmarks) {
+            res.status(200).json({ bookmarks: true })
+        } else {
+            res.status(200).json({ bookmarks: false })
+        }
     } catch (err) {
         next(err)
     }
