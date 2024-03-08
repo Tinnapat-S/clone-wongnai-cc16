@@ -8,5 +8,6 @@ const restaurantRoute = express.Router()
 restaurantRoute.get("/", c.restaurants.getAll)
 restaurantRoute.get("/filter?", c.restaurants.getFilter)
 restaurantRoute.get("/bookmark", authenticate, c.restaurants.getRestaurantsWithUser)
+restaurantRoute.get("/:id", c.restaurants.getRestaurantById)
 
 module.exports = restaurantRoute

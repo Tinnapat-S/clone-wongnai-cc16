@@ -88,3 +88,18 @@ module.exports.getFilter = async (req, res, next) => {
         next(err)
     }
 }
+
+exports.getRestaurantById = async (req, res) => {
+    try {
+        console.log(req.params, "params")
+        const { id } = req.params
+        const restaurant = await repo.restaurants.getRestaurantById(+id)
+        if (!restaurant) {
+            throw new CustomError("Restaurant not found", "400_BAD_REQUEST", 400)
+        }
+        console.log(restaurant, "restaurant")
+        res.status(200).json(restaurant)
+    } catch (err) {
+        console.log(err)
+    }
+}

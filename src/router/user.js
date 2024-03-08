@@ -22,6 +22,10 @@ userRoute.patch("/", authenticate, isOwn, c.user.update) //
 userRoute.patch("/user-img", authenticate, upload.fields([{ name: "imgProfile", maxCount: 1 }]), isOwn, c.user.updateProfile) //
 userRoute.delete("/:id", authenticate, c.user.delete)
 userRoute.post("/createReview", c.user.createReview)
+userRoute.post("/review", authenticate, upload.fields([{ name: "img" }]), c.user.createReview)
+userRoute.patch("/review", authenticate, c.user.updateReview)
+userRoute.delete("/review/:id", authenticate, c.user.deleteReview)
+userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c.user.updateReviewImg)
 
 //bookmark
 userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)

@@ -42,3 +42,14 @@ module.exports.getRestaurantsBookmarkByUserId = async (userId) =>
             bookmarks: { where: { userId } },
         },
     })
+
+exports.getRestaurantById = async (id) => {
+    return await prisma.restaurant.findUnique({
+        where: {
+            id: parseInt(id),
+        },
+        include: {
+            category: { select: { categoryName: true } },
+        },
+    })
+}

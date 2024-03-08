@@ -4,6 +4,7 @@ const CustomError = require("../config/error")
 
 module.exports = async function authenticate(req, res, next) {
     try {
+        console.log(req?.headers?.authorization)
         if (!req?.headers?.authorization) throw new Error()
         const authorization = req?.headers?.authorization.startsWith("Bearer")
             ? req.headers.authorization
@@ -16,6 +17,7 @@ module.exports = async function authenticate(req, res, next) {
         const data = await prisma.user.findFirst({ where: { id: decoded.userId } })
         if (!data) next(new CustomError("Your accound has been delete", "NotFoundData", 500))
         req.user = data
+        console.log("...")
         next()
     } catch (err) {
         next(err)

@@ -32,7 +32,14 @@ module.exports.get = async (req, res, next) => {
 }
 module.exports.getMe = async (req, res, next) => {
     try {
-        res.status(200).json({ user: req.user })
+        const { id } = req.user
+        const user = await repo.user.userGetProfile(+id)
+        if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
+        const reviews = await repo.user.getReview(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
+        res.status(200).json({ user, reviews, bookmarks })
+
+        // res.status(200).json({ user: req.user })
     } catch (err) {
         next(err)
     }
@@ -183,9 +190,10 @@ module.exports.update = async (req, res, next) => {
             name: req.body.name,
             mobile: req.body.mobile,
             gender: req.body.gender,
-            birthdate: req.user.birthdate,
+            birthdate: req.body.birthdate,
             imgProfile: req.body.imgProfile,
         }
+        console.log("req.body.birthdate", req.body.birthdate)
         const user = await repo.user.update(id, data)
         delete user.password
         delete user.createdAt
@@ -226,12 +234,62 @@ module.exports.delete = async (req, res, next) => {
 }
 
 module.exports.createReview = async (req, res, next) => {
-   try{
-        const {userId, restaurantId, reviewImgs,star,title,description} = req.body
-        const review = await repo.user.createReview({userId, restaurantId, reviewImgs,star,title,description})
-        res.status(200).json({review})
-   } catch (err) {
-    next(err)
-}
+    try {
+        // console.log(req.files.img)
+        // console.log(req.body, "body")
+        const ALLIMGE = []
+        for (let i of req.files.img) {
+            ALLIMGE.push({ img: await uploadCloudinary(i.path) })
+            fs.unlink(i.path)
+        }
+
+        // console.log(ALLIMGE)
+        req.body.userId = +req.user.id
+        req.body.restaurantId = +req.body.restaurantId
+        req.body.star = +req.body.star
+        const review = await repo.user.createReview(req.body, ALLIMGE)
+        res.status(200).json({ review })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
     return
+}
+
+module.exports.updateReview = async (req, res, next) => {
+    try {
+        const isOwn = await repo.user.checkOwnerReview(+req.user.id, +req.body.id)
+        if (!isOwn) {
+            throw new CustomError("not your", "WRONG_INPUT", 400)
+            return
+        }
+        const dataReview = { ...req.body }
+        delete dataReview.id
+        const data = await repo.user.updateReview(dataReview, req.body.id)
+        res.status(200).json({ message: "updated", data })
+    } catch (err) {
+        next(err)
+    }
+}
+module.exports.updateReviewImg = async (req, res, next) => {
+    try {
+        //
+    } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.deleteReview = async (req, res, next) => {
+    try {
+        console.log(req.params)
+        const deleteReviewImg = await repo.user.deleteReviewImg(+req.params.id)
+        console.log(deleteReviewImg)
+
+        const data = await repo.user.deleteReview(+req.params.id)
+        console.log(data)
+
+        res.status(204).json({ message: "deleted" })
+    } catch (err) {
+        next(err)
+    }
 }
