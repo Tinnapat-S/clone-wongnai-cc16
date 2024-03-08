@@ -36,7 +36,13 @@ module.exports.getMe = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmarkById(+id)
+        const bookmarks = await repo.user.getBookmark(+id)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+        user.role = "USER"
+
         res.status(200).json({ user, reviews, bookmarks })
 
         // res.status(200).json({ user: req.user })
@@ -63,6 +69,7 @@ module.exports.login = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         const token = utils.jwt.sign({ userId: user.id })
         res.status(200).json({ token, user: user })
@@ -104,6 +111,7 @@ module.exports.register = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         // console.log(user)
         console.log(user)
@@ -165,6 +173,7 @@ module.exports.registerGoogle = async (req, res, next) => {
             delete user.createdAt
             delete user.googleId
             delete user.facebookId
+            user.role = "USER"
 
             res.status(200).json({ token, user })
             return
@@ -176,7 +185,7 @@ module.exports.registerGoogle = async (req, res, next) => {
         delete findUser.createdAt
         delete findUser.googleId
         delete findUser.facebookId
-
+        findUser.role = "USER"
         res.status(200).json({ user: findUser, token })
     } catch (err) {
         next(err)
