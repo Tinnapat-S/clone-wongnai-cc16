@@ -17,7 +17,7 @@ module.exports.getAll = async (req, res, next) => {
 
 exports.getProvince = catchError(
     async (req, res, next) => {
-        const province = await repo.merchant.getProvince()
+        const province = await repo.merchant.getAllProvince()
         res.status(200).json({ province })
     }
 )
@@ -26,7 +26,7 @@ exports.getDistrict = catchError(
     async (req, res, next) => {
         const { provinceCode } = req.body
         console.log(req.body);
-        const district = await repo.merchant.getDistrict(provinceCode)
+        const district = await repo.merchant.getAllDistrict(provinceCode)
         console.log(district);
         res.status(200).json({ district })
 
@@ -51,17 +51,32 @@ exports.getCategory = catchError(
     }
 )
 
-exports.register = catchError(
+exports.createRestaurant = catchError(
     async (req, res, next) => {
         req.body.subDistrictCode = req.body.subdistrictCode
         delete req.body.subdistrictCode
 
-        const newMerchant = await repo.merchant.merchantRegister(req.body)
+        const newMerchant = await repo.merchant.createRestaurant(req.body)
         res.status(200).json({ newMerchant })
     }
 )
-// exports.getCodeByName = catchError(
-//     async (req, res, next) => { 
-//         const 
-//     }
-// )
+
+exports.getGeoDataByName = catchError(
+    async (req, res, next) => {
+        // const { postalCode } = req.body
+        // console.log(postalCode);
+        // const geoData = await repo.merchant.getGeoDataByPostCode(postalCode)
+        // // const province
+        // const [{ ...areaData }] = geoData
+        // console.log(areaData, 'areaData');
+        const { province, district, subdistrict } = req.body
+        console.log(province, district);
+        const provinceData = await repo.merchant.getProvinceByName(province)
+        const districtData = await repo.merchant.getDistrictByName(district)
+        const subDistrictData = await repo.merchant.getSubDistrictByName(subdistrict)
+
+
+
+        res.status(200).json({ provinceData, districtData, subDistrictData })
+    }
+)
