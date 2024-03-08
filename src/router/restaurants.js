@@ -11,4 +11,6 @@ restaurantRoute.get("/filter?", getUser, c.restaurants.getFilter)
 restaurantRoute.get("/bookmark", authenticate, c.restaurants.getRestaurantsWithUser)
 restaurantRoute.get("/:id", c.restaurants.getRestaurantById)
 
+// restaurantRoute.get("/:id/review", c.reviews.getReviewByRestaurantId)
+
 module.exports = restaurantRoute
