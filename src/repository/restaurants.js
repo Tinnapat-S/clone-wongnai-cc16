@@ -94,3 +94,17 @@ module.exports.getRestaurantById = async (id) =>
             },
         },
     })
+
+module.exports.uploadImg = (data) =>
+    prisma.restaurantImage.createMany({
+        data,
+    })
+module.exports.restaurantImg = (restaurantId) =>
+    prisma.restaurantImage.findMany({
+        where: { restaurantId },
+    })
+
+module.exports.deleteRestaurantImg = (id) =>
+    prisma.restaurantImage.delete({
+        where: { id },
+    })
