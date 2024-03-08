@@ -144,6 +144,7 @@ model Restaurant {
   subtitle        String      @db.VarChar(500)
   lat             String?
   lng             String?
+  // rating          Float       @computed("reviewPoint / reviewCount")
   reviewPoint     Int         @default(0) @map("review_point")
   reviewCount     Int         @default(0) @map("review_count")
   verify          Boolean     @default(false)
