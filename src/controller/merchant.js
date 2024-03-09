@@ -76,24 +76,61 @@ exports.getSubDistrict = catchError(
     }
 )
 
-exports.register = catchError(async (req, res, next) => {
-    const existsUser = await repo.merchant.findUserByUsernameOrMobile(
-      req.body.username || req.body.mobile
-    );
+module.exports.register = async (req, res, next) => {
+  try {
+      const { name,  username, mobile, password, confirmPassword } = req.body
+      console.log(req.body)
+      // console.log(req.files.imgProfile[0].path)
+      
+      const existsUser = await repo.merchant.findUserByUsernameOrMobile(
+        req.body.username || req.body.mobile
+      );
+    
+      if (existsUser) {
+        throw new CustomError('USERNAME_OR_MOBILE_IN_USE', 400);
+      }
+          // console.log(req.body)
+      delete req.body.confirmPassword
+      // HASHED PASSWORD
+      const hashed = await utils.bcrypt.hashed(password)
+      console.log(hashed)
+      // CREATE user to database
+      const merchant = await repo.merchant.createUser({ ...req.body, password: hashed })
+      // DELETE KEY of password from merchant data
+      delete merchant.password
+      delete merchant.createdAt
+      // SIGN token from merchant data
+      // console.log(merchant)
+      console.log(merchant)
+      const token = utils.jwt.sign({ merchantId: merchant.id })
+
+      res.status(200).json({ token, merchant })
+  } catch (err) { 
+   
+      console.log(err)
+      next(err)
+  }
+  return
+}
+
+// exports.register = catchError(async (req, res, next) => {
+//     const existsUser = await repo.merchant.findUserByUsernameOrMobile(
+//       req.body.username || req.body.mobile
+//     );
   
-    if (existsUser) {
-      createError('USERNAME_OR_MOBILE_IN_USE', 400);
-    }
+//     if (existsUser) {
+//       createError('USERNAME_OR_MOBILE_IN_USE', 400);
+//     }
   
-    req.body.password = await utils.bcrypt.hashed(req.body.password);
+//     req.body.password = await utils.bcrypt.hashed(req.body.password);
   
-    const newUser = await repo.merchant.createUser(req.body);
-    const payload = { userId: newUser.id };
-    const accessToken = utils.jwt.sign(payload);
-    delete newUser.password;
+//     const newUser = await repo.merchant.createUser(req.body);
+//     const payload = { userId: newUser.id };
+//     const accessToken = utils.jwt.sign(payload);
+//     delete newUser.password;
   
-    res.status(201).json({ accessToken, newUser });
-  });
+//     res.status(201).json({ accessToken, newUser });
+//   });
 
 exports.login = catchError(async (req, res, next) => {
     const existsUser = await repo.merchant.findUserByUsernameOrMobile(
@@ -103,13 +140,13 @@ exports.login = catchError(async (req, res, next) => {
     if (!existsUser) {
       createError('invalid credentials', 400);
     }
-    const isMatch = await repo.merchant.findPassWordTest(
-        req.body.password
-    )
-    // const isMatch = await utils.bcrypt.compare(
-    //   req.body.password,
-    //   existsUser.password
-    // );
+    // const isMatch = await repo.merchant.findPassWordTest(
+    //     req.body.password
+    // )
+    const isMatch = await utils.bcrypt.compare(
+      req.body.password,
+      existsUser.password
+    );
   
     if (!isMatch) {
       createError('invalid credentials', 400);

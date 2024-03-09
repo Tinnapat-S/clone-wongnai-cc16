@@ -2,6 +2,7 @@ const express = require("express")
 const controller = require("../controller")
 const { validateLogin, validateRegister } = require("../middlewares/validators/validate-mer")
 const upload = require("../middlewares/upload")
+const authenticateMerc = require("../middlewares/authenticateMerc")
 
 const merchRoute = express.Router()
 
@@ -12,7 +13,8 @@ merchRoute.patch("/menu-img/:id", upload.single("img"), controller.merchant.upda
 merchRoute.get('/province', controller.merchant.getProvince)
 merchRoute.post('/district', controller.merchant.getDistrict)
 merchRoute.post('/sub-district', controller.merchant.getSubDistrict)
-merchRoute.post('/login',validateLogin,controller.merchant.login)
+merchRoute.post('/login',authenticateMerc,validateLogin,controller.merchant.login)
 merchRoute.post('/register',validateRegister,controller.merchant.register)
+    
 
 module.exports = merchRoute
