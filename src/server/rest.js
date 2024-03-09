@@ -15,14 +15,16 @@ const restaurantRoute = require("../router/restaurants")
 
 //=====================================================Server Zone
 module.exports = function restApiServer(app) {
+  
     //=====================================================Encoding Zone
     app.use(morgan("dev"))
     app.use(cors())
     app.use(json())
     app.use(urlencoded({ extended: false }))
     app.use(express.static("public"))
-
+    
     //=====================================================Routing Zone
+    
     app.use("/ping", (req, res, next) => {
         try {
             console.log("Checking the API status: Everything is OK")
@@ -34,6 +36,7 @@ module.exports = function restApiServer(app) {
     app.use("/user", userRoute)
     app.use("/merchant", merchantRoute)
     app.use("/restaurants", restaurantRoute)
+   
     // app.use("/admin")
 
     //=====================================================Throwing Zone

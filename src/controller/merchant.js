@@ -4,9 +4,7 @@ const { CustomError } = require("../config/error")
 const { Role } = require("@prisma/client")
 const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
-
 const fs = require("fs/promises")
-const { catchError } = require("../utils/catch-error");
 const { createError } = require("../utils/creat-error")
 
 module.exports.getAll = async (req, res, next) => {
