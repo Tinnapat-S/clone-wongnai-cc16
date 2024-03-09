@@ -36,7 +36,7 @@ module.exports.getMe = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmark(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
         delete user.password
         delete user.createdAt
         delete user.googleId
