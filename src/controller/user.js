@@ -314,6 +314,7 @@ module.exports.createReview = async (req, res, next) => {
         req.body.userId = +req.user.id
         req.body.restaurantId = +req.body.restaurantId
         req.body.star = +req.body.star
+        await repo.restaurants.reviewPoint(req.body.restaurantId, req.body.star)
         const review = await repo.user.createReview(req.body, ALLIMGE)
         res.status(200).json({ review })
     } catch (err) {

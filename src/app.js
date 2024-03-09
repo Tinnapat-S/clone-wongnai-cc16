@@ -6,6 +6,7 @@ const http = require("http")
 //=====================================================local imported Zone
 
 const restApiServer = require("./server/rest")
+const { restApiServerChat } = require("./server/sever-chat")
 
 //=====================================================Constance Zone
 dotenv.config({ path: "./.env" })
@@ -18,6 +19,13 @@ const server = http.createServer(app)
 
 restApiServer(app)
 
+const chat = express()
+const serverChat = http.createServer(chat)
+restApiServerChat(chat, serverChat)
+
+serverChat.listen(8888, () => {
+    console.log(8888, "port")
+})
 //
 //
 //
