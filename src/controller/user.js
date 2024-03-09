@@ -37,6 +37,12 @@ module.exports.getMe = async (req, res, next) => {
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
         const bookmarks = await repo.user.getBookmarkById(+id)
+        delete user.password
+        delete user.createdAt
+        delete user.googleId
+        delete user.facebookId
+        user.role = "USER"
+
         res.status(200).json({ user, reviews, bookmarks })
 
         // res.status(200).json({ user: req.user })
@@ -63,6 +69,7 @@ module.exports.login = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         const token = utils.jwt.sign({ userId: user.id })
         res.status(200).json({ token, user: user })
@@ -104,6 +111,7 @@ module.exports.register = async (req, res, next) => {
         delete user.createdAt
         delete user.googleId
         delete user.facebookId
+        user.role = "USER"
         // SIGN token from user data
         // console.log(user)
         console.log(user)
@@ -165,6 +173,7 @@ module.exports.registerGoogle = async (req, res, next) => {
             delete user.createdAt
             delete user.googleId
             delete user.facebookId
+            user.role = "USER"
 
             res.status(200).json({ token, user })
             return
@@ -176,7 +185,7 @@ module.exports.registerGoogle = async (req, res, next) => {
         delete findUser.createdAt
         delete findUser.googleId
         delete findUser.facebookId
-
+        findUser.role = "USER"
         res.status(200).json({ user: findUser, token })
     } catch (err) {
         next(err)
@@ -305,6 +314,7 @@ module.exports.createReview = async (req, res, next) => {
         req.body.userId = +req.user.id
         req.body.restaurantId = +req.body.restaurantId
         req.body.star = +req.body.star
+        await repo.restaurants.reviewPoint(req.body.restaurantId, req.body.star)
         const review = await repo.user.createReview(req.body, ALLIMGE)
         res.status(200).json({ review })
     } catch (err) {
@@ -363,6 +373,17 @@ module.exports.getBookmark = async (req, res, next) => {
             res.status(200).json({ bookmarks: false })
         }
     } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.chatBox = async (req, res, next) => {
+    try {
+        const chatBox = await repo.user.getChatBox(+req.params.userId)
+        res.status(200).json({ chatBox })
+        // console.log(req.params.userId)
+    } catch (err) {
+        console.log(err)
         next(err)
     }
 }

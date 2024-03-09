@@ -65,16 +65,7 @@ exports.updateMenuImg = catchError(async (req, res, next) => {
     res.status(200).json({ data })
 })
 
-exports.getSubDistrict = catchError(
-    async (req, res, next) => {
-        const { districtCode } = req.body
-        console.log(req.body);
-        const subDistrict = await repo.merchant.getSubDistrict(districtCode)
-        console.log(subDistrict);
-        res.status(200).json({ subDistrict })
 
-    }
-)
 
 module.exports.register = async (req, res, next) => {
   try {
@@ -112,26 +103,6 @@ module.exports.register = async (req, res, next) => {
   }
   return
 }
-
-// exports.register = catchError(async (req, res, next) => {
-//     const existsUser = await repo.merchant.findUserByUsernameOrMobile(
-//       req.body.username || req.body.mobile
-//     );
-  
-//     if (existsUser) {
-//       createError('USERNAME_OR_MOBILE_IN_USE', 400);
-//     }
-  
-//     req.body.password = await utils.bcrypt.hashed(req.body.password);
-  
-//     const newUser = await repo.merchant.createUser(req.body);
-//     const payload = { userId: newUser.id };
-//     const accessToken = utils.jwt.sign(payload);
-//     delete newUser.password;
-  
-//     res.status(201).json({ accessToken, newUser });
-//   });
-
 exports.login = catchError(async (req, res, next) => {
     const existsUser = await repo.merchant.findUserByUsernameOrMobile(
       req.body.usernameOrMobile
@@ -160,34 +131,53 @@ exports.login = catchError(async (req, res, next) => {
   });
 
 
-// module.exports.login = async (req, res, next) => {
-//     try {
-//         const { username, password } = req.body
-//         // GET username from database
-//         // console.log(req.body, "******")
-//         const user = await repo.merchant.get(username)
-//         // console.log(user.name, "user")
-//         if (!user) throw new CustomError("Username is wrong", "WRONG_INPUT", 400)
+exports.getGeoDataByName = catchError(
+    async (req, res, next) => {
+        const { province, district, subdistrict } = req.body
+        console.log(province, district);
+        const provinceData = await repo.merchant.getProvinceByName(province)
+        const districtData = await repo.merchant.getDistrictByName(district)
+        const subDistrictData = await repo.merchant.getSubDistrictByName(subdistrict)
 
-//         // COMPARE password with database
-//         // const result = await utils.bcrypt.compare(password, user.password)
-//         const result = await repo.merchant.get(password, merchant.password)
-//         if (!result) throw new CustomError("Password is wrong", "WRONG_INPUT", 400)
+        res.status(200).json({ provinceData, districtData, subDistrictData })
+    }
+)
 
-//         // DELETE KEY of password from user data
-//         // delete user.password
-//         // delete user.createdAt
-       
-//         // SIGN token from user data
-//         const token = utils.jwt.sign({ userId: user.id })
-//         res.status(200).json({ token, user: user })
-//     } catch (err) {
-//         next(err)
-//     }
-//     return
-// }
-// exports.getCodeByName = catchError(
-//     async (req, res, next) => {
-//         const
-//     }
-// )
+//############### GEO_DATA_AREA_DONOT_DELETE ❗️❗️ ^^^
+
+exports.getCategory = catchError(
+    async (req, res, next) => {
+        const categories = await repo.categories.getAll()
+        res.status(200).json({ categories })
+    }
+)
+
+exports.createRestaurant = catchError(
+    async (req, res, next) => {
+
+        const { resData, openHours } = req.body
+
+        resData.subDistrictCode = resData.subdistrictCode
+        resData.lat = resData.lat + ""
+        resData.lng = resData.lng + ""
+        delete resData.subdistrictCode
+        const newRestaurant = await repo.merchant.createRestaurant(resData)
+
+        const newOpenHour = Object.fromEntries(Object.entries(openHours).filter(async ([day, time]) => {
+            if (time.closed === false) {
+                const data = {
+                    restaurantId: newRestaurant.id,
+                    date: day,
+                    openTime: new Date(`2024-02-02T` + time.open),
+                    closeTime: new Date(`2024-02-02T` + time.close)
+                }
+                await repo.merchant.createOpenHours(data)
+            }
+        }
+
+        ))
+
+        res.status(200).json({ newRestaurant })
+    }
+)
+

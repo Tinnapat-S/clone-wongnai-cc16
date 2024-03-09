@@ -12,6 +12,7 @@ const CustomError = require("../config/error")
 const userRoute = require("../router/user")
 const merchRoute = require("../router/merchant")
 const restaurantRoute = require("../router/restaurants")
+const prisma = require("../config/prisma")
 
 //=====================================================Server Zone
 module.exports = function restApiServer(app) {
@@ -38,6 +39,29 @@ module.exports = function restApiServer(app) {
     app.use("/restaurants", restaurantRoute)
    
     // app.use("/admin")
+
+    //
+    //
+    //
+    app.get("/chat/:restaurantId/:userId", async (req, res, next) => {
+        try {
+            const { restaurantId, userId } = req.params
+
+            console.log(restaurantId, userId, "///")
+            const data = await prisma.chat.findMany({
+                where: {
+                    restaurantId: +restaurantId,
+                    userId: +userId,
+                },
+            })
+            res.status(200).json({ data })
+        } catch (error) {
+            next(error)
+        }
+    })
+    //
+    //
+    //
 
     //=====================================================Throwing Zone
     // app.use(notFound)

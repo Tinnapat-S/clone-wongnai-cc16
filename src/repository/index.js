@@ -6,6 +6,6 @@ const repo = {
     categories: require("./categories"),
     bookmark: require("./bookmarks"),
     merchant: require("./merchant"),
-    
+    reviews: require("./reviews"),
 }
 module.exports = repo
