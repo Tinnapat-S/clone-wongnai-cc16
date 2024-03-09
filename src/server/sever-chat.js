@@ -37,6 +37,7 @@ exports.restApiServerChat = (chat, chatServer) => {
             const { userId, restaurantId, message, role } = msg
             const data = await prisma.chat.create({ data: { userId, restaurantId, message, sender: role } })
             console.log("data", data)
+            console.log("onlineUser", onlineUser)
             io.to([onlineUser[socket.handshake.auth.sender], onlineUser[msg.received]]).emit("received", {
                 ...msg,
                 received: socket.handshake.auth.sender,

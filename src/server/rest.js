@@ -52,7 +52,9 @@ module.exports = function restApiServer(app) {
                 },
             })
             res.status(200).json({ data })
-        } catch (error) {}
+        } catch (error) {
+            next(error)
+        }
     })
     //
     //

@@ -376,3 +376,14 @@ module.exports.getBookmark = async (req, res, next) => {
         next(err)
     }
 }
+
+module.exports.chatBox = async (req, res, next) => {
+    try {
+        const chatBox = await repo.user.getChatBox(+req.params.userId)
+        res.status(200).json({ chatBox })
+        // console.log(req.params.userId)
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}

@@ -27,6 +27,11 @@ userRoute.patch("/review", authenticate, c.user.updateReview)
 userRoute.delete("/review/:id", authenticate, c.user.deleteReview)
 userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c.user.updateReviewImg)
 
+// -------------chat-----------------
+userRoute.get("/chat-box/:userId", authenticate, c.user.chatBox)
+
+//----------------------------------
+
 //bookmark
 userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)
 userRoute.get("/bookmark/:id", authenticate, c.user.getBookmark)
