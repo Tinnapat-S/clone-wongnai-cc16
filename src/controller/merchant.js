@@ -111,8 +111,11 @@ exports.createRestaurant = catchError(
         req.body.subDistrictCode = req.body.subdistrictCode
         delete req.body.subdistrictCode
 
-        const newMerchant = await repo.merchant.createRestaurant(req.body)
-        res.status(200).json({ newMerchant })
+        const { resData, openHours } = req.body
+        console.log(resData, openHours);
+        // const newRestaurant = await repo.merchant.createRestaurant(req.body)
+        // const openHours = 
+        // res.status(200).json({ newRestaurant })
     }
 )
 
