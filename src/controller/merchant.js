@@ -6,6 +6,7 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 
 const fs = require("fs/promises")
+const { time, log } = require("console")
 module.exports.getAll = async (req, res, next) => {
     try {
         res.status(200).json({ message: "testpass" })
@@ -108,14 +109,30 @@ exports.getCategory = catchError(
 
 exports.createRestaurant = catchError(
     async (req, res, next) => {
-        req.body.subDistrictCode = req.body.subdistrictCode
-        delete req.body.subdistrictCode
 
         const { resData, openHours } = req.body
-        console.log(resData, openHours);
-        // const newRestaurant = await repo.merchant.createRestaurant(req.body)
-        // const openHours = 
-        // res.status(200).json({ newRestaurant })
+
+        resData.subDistrictCode = resData.subdistrictCode
+        resData.lat = resData.lat + ""
+        resData.lng = resData.lng + ""
+        delete resData.subdistrictCode
+        const newRestaurant = await repo.merchant.createRestaurant(resData)
+
+        const newOpenHour = Object.fromEntries(Object.entries(openHours).filter(async ([day, time]) => {
+            if (time.closed === false) {
+                const data = {
+                    restaurantId: newRestaurant.id,
+                    date: day,
+                    openTime: new Date(`2024-02-02T` + time.open),
+                    closeTime: new Date(`2024-02-02T` + time.close)
+                }
+                await repo.merchant.createOpenHours(data)
+            }
+        }
+
+        ))
+
+        res.status(200).json({ newRestaurant })
     }
 )
 
