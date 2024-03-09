@@ -287,4 +287,5 @@ model Chat {
   restaurantid Restaurant @relation(fields: [restaurantId], references: [id])
   message      String     @db.VarChar(100)
   sender       Roles
+  time         DateTime   @default(now())
 }
