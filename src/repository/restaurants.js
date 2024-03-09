@@ -10,6 +10,12 @@ module.exports.getAll = async () =>
         },
     })
 
+module.exports.reviewPoint = (id, point) =>
+    prisma.restaurant.update({
+        where: { id },
+        data: { reviewPoint: { increment: point }, reviewCount: { increment: 1 } },
+    })
+
 // module.exports.getFilterWithUserId = async (filterConditions, facilityId, userId) =>
 //     await prisma.restaurant.findMany({
 //         where: {
