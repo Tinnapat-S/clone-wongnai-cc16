@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken")
 const prisma = require("../config/prisma")
 const CustomError = require("../config/error")
 
-module.exports = async function authenticate(req, res, next) {
+module.exports = async function authenticateMerc(req, res, next) {
     try {
         if (!req?.headers?.authorization) throw new Error()
         const authorization = req?.headers?.authorization.startsWith("Bearer")
@@ -15,7 +15,7 @@ module.exports = async function authenticate(req, res, next) {
         // console.log(decoded)
         const data = await prisma.merchant.findFirst({ where: { id: decoded.merchantId } })
         if (!data) next(new CustomError("Your accound has been delete", "NotFoundData", 500))
-        req.user = data
+        req.merchant = data
 
         next()
     } catch (err) {
