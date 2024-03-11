@@ -13,6 +13,8 @@ merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
 merchRoute.post("/create-restaurant", controller.merchant.createRestaurant)
 merchRoute.post('/get-by-name', controller.merchant.getGeoDataByName)
 merchRoute.get('/category', controller.merchant.getCategory)
+merchRoute.post('/get-businessinfo', controller.merchant.getBusinessInfo)
+
 //////////////////////////// DO NOT DELETE ///////////////////////
 
 merchRoute.post("/menu", upload.single("img"), controller.merchant.createMenu)
@@ -22,8 +24,8 @@ merchRoute.patch("/menu-img/:id", upload.single("img"), controller.merchant.upda
 merchRoute.get('/province', controller.merchant.getProvince)
 merchRoute.post('/district', controller.merchant.getDistrict)
 merchRoute.post('/sub-district', controller.merchant.getSubDistrict)
-merchRoute.post('/login',validateLogin,controller.merchant.login)
-merchRoute.post('/register',validateRegister,controller.merchant.register)
-    
+merchRoute.post('/login', validateLogin, controller.merchant.login)
+merchRoute.post('/register', validateRegister, controller.merchant.register)
+
 
 module.exports = merchRoute
