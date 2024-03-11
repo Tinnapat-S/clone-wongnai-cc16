@@ -104,6 +104,7 @@ module.exports.register = async (req, res, next) => {
         // DELETE KEY of password from merchant data
         delete merchant.password
         delete merchant.createdAt
+        merchant.role = "RESTAURANT"
         // SIGN token from merchant data
         // console.log(merchant)
         console.log(merchant)
@@ -134,6 +135,7 @@ exports.login = catchError(async (req, res, next) => {
     const payload = { userId: existsUser.id, role: "MERCHANT" }
     const accessToken = utils.jwt.sign(payload)
     delete existsUser.password
+    existsUser.role = "RESTAURANT"
 
     res.status(200).json({ accessToken, merchant: existsUser })
 })
@@ -268,3 +270,8 @@ exports.updateRestaurant = catchError(
         res.status(200).json({ updatedRestaurant })
     }
 )
+exports.getSideBar = catchError(async (req, res, next) => {
+    const { id } = req.params
+    const data = await repo.restaurants.getSideBar(+id)
+    res.status(200).json({ data })
+})

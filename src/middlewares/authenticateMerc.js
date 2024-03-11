@@ -13,10 +13,11 @@ module.exports = async function authenticateMerc(req, res, next) {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY ?? "key")
 
         // console.log(decoded)
-        const data = await prisma.merchant.findFirst({ where: { id: decoded.merchantId } })
+        console.log(decoded, "000000")
+        const data = await prisma.merchant.findFirst({ where: { id: decoded.userId } })
         if (!data) next(new CustomError("Your accound has been delete", "NotFoundData", 500))
         req.merchant = data
-
+        console.log(data)
         next()
     } catch (err) {
         next(err)
