@@ -37,7 +37,6 @@ module.exports.getRestaurantsWithUser = async (req, res, next) => {
 module.exports.getFilter = async (req, res, next) => {
     try {
         const filterData = req.query
-        console.log(filterData, "params")
 
         const { districtId, facilityId, rating, priceLength, categoryId } = filterData
 
@@ -61,8 +60,10 @@ module.exports.getFilter = async (req, res, next) => {
 
             if (rating) {
                 //rating is only 1 values in array
-                const ratingInt = parseInt(rating[0])
-                filterConditions.push({ reviewPoint: { in: [ratingInt] } })
+
+                const ratingFloat = parseFloat(rating[0])
+                console.log(ratingFloat)
+                filterConditions.push({ rating: { in: [ratingFloat] } })
             }
             if (priceLength) {
                 // const getPrice = priceLength.map((id) => ({ priceLength: id }))
