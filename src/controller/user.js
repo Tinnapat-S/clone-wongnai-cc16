@@ -302,8 +302,8 @@ module.exports.delete = async (req, res, next) => {
 
 module.exports.createReview = async (req, res, next) => {
     try {
-        // console.log(req.files.img)
-        // console.log(req.body, "body")
+        console.log(req.files.img)
+        console.log(req.body, "body")
         const ALLIMGE = []
         for (let i of req.files.img) {
             ALLIMGE.push({ img: await uploadCloudinary(i.path) })

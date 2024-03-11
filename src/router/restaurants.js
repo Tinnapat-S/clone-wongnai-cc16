@@ -10,6 +10,7 @@ restaurantRoute.get("/", c.restaurants.getAll)
 restaurantRoute.get("/filter?", getUser, c.restaurants.getFilter)
 restaurantRoute.get("/bookmark", authenticate, c.restaurants.getRestaurantsWithUser)
 restaurantRoute.get("/:id", c.restaurants.getRestaurantById)
+restaurantRoute.get("/category/:id", c.restaurants.getCategoryById)
 
 // restaurantRoute.get("/:id/review", c.reviews.getReviewByRestaurantId)
 
