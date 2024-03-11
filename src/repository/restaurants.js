@@ -124,3 +124,5 @@ module.exports.deleteRestaurantImg = (id) =>
     prisma.restaurantImage.delete({
         where: { id },
     })
+module.exports.getSideBar = (merchantId) =>
+    prisma.restaurant.findMany({ where: { merchantId }, include: { category: true, restaurantImages: true, reviews: true } })
