@@ -6,6 +6,7 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
+const { getBusinessInfoBYMerchantId } = require("../repository/merchant")
 
 module.exports.getMe = async (req, res, next) => {
     try {
@@ -146,7 +147,6 @@ exports.getGeoDataByName = catchError(async (req, res, next) => {
     res.status(200).json({ provinceData, districtData, subDistrictData })
 })
 
-//############### GEO_DATA_AREA_DONOT_DELETE ❗️❗️ ^^^
 
 exports.getCategory = catchError(async (req, res, next) => {
     const categories = await repo.categories.getAll()
@@ -154,7 +154,9 @@ exports.getCategory = catchError(async (req, res, next) => {
 })
 
 exports.createRestaurant = catchError(async (req, res, next) => {
-    const { resData, openHours } = req.body
+
+
+    const { resData, openHours, facility } = req.body
 
     resData.subDistrictCode = resData.subdistrictCode
     resData.lat = resData.lat + ""
@@ -171,10 +173,42 @@ exports.createRestaurant = catchError(async (req, res, next) => {
                     openTime: new Date(`2024-02-02T` + time.open),
                     closeTime: new Date(`2024-02-02T` + time.close),
                 }
+
+                console.log(data);
                 await repo.merchant.createOpenHours(data)
             }
-        }),
-    )
+        }))
+
+    console.log(facility);
+
+    for (const key in facility) {
+        if (Object.hasOwnProperty.call(facility, key)) {
+            const element = facility[key];
+            if (facility[key].value === true) {
+                const data = {
+                    restaurantId: newRestaurant.id,
+                    facilityId: element.id
+                }
+
+                console.log(element);
+                await repo.merchant.createFacility(data)
+            }
+
+
+        }
+    }
+
 
     res.status(200).json({ newRestaurant })
-})
+}
+)
+
+exports.getBusinessInfo = catchError(
+    async (req, res, next) => {
+        const { restaurantId } = req.body
+        const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
+        // console.log(restaurant);
+        res.status(200).json({ restaurant })
+    }
+)
+

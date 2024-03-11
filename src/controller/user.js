@@ -302,6 +302,8 @@ module.exports.delete = async (req, res, next) => {
 
 module.exports.createReview = async (req, res, next) => {
     try {
+        console.log(req.files.img)
+        console.log(req.body, "body")
         if (!req.files.img) {
             throw new CustomError("review image is require", "WRONG_INPUT", 400)
             return
