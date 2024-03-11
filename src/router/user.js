@@ -28,6 +28,11 @@ userRoute.patch("/review", authenticate, c.user.updateReview) // ฮั่นท
 userRoute.delete("/review/:id", authenticate, c.user.deleteReview) // ฮั่นทำ validate แล้ว
 userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c.user.updateReviewImg) // ฮั่นทำเส้นนี้เอง แต่ตอนนี้ยังไม่ได้ใช้
 
+// -------------chat-----------------
+userRoute.get("/chat-box/:userId", authenticate, c.user.chatBox)
+
+//----------------------------------
+
 //bookmark
 userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)
 userRoute.get("/bookmark/:id", authenticate, c.user.getBookmark)

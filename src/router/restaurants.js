@@ -16,4 +16,5 @@ restaurantRoute.delete("/Img/:id", c.restaurants.deleteRestaurantImg)
 
 // restaurantRoute.get("/:id/review", c.reviews.getReviewByRestaurantId)
 
+
 module.exports = restaurantRoute

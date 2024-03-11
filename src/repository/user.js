@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma")
+const { execute } = require("../db")
 
 // =========================================== BASIC CRUD ===================================
 module.exports.get = async (username) =>
@@ -66,3 +67,14 @@ module.exports.getBookmarkById = async (userId) => await prisma.bookmark.findMan
 module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })
 
 module.exports.findReview = (userId, id) => prisma.review.findFirst({ where: { userId, id } })
+///*** chat ***//
+module.exports.getChatBox = async (userId) => {
+    const sql = `  select u.id userId, r.id restaurantId, profile_img, restaurant_name, subtitle 
+    from Chat c inner join users u on c.user_id = u.id inner join restaurants r on c.restaurant_id = r.id  
+    where u.id = ?
+    group by u.id, r.id `
+    const value = [userId]
+    const data = await execute(sql, value)
+    return data
+}
+// ************//
