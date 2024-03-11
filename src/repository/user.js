@@ -64,3 +64,5 @@ module.exports.getBookmark = async ({ userId, restaurantId }) =>
 
 module.exports.getBookmarkById = async (userId) => await prisma.bookmark.findMany({ where: { userId }, include: { restaurant: true } })
 module.exports.deleteBookmark = async (id) => await prisma.bookmark.delete({ where: { id } })
+
+module.exports.findReview = (userId, id) => prisma.review.findFirst({ where: { userId, id } })

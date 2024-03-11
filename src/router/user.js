@@ -5,6 +5,7 @@ const authenticate = require("../middlewares/authenticate")
 const { validateRegister } = require("../middlewares/validators/validate-auth")
 const upload = require("../middlewares/upload")
 const { isOwn } = require("../middlewares/isOwn")
+const { validateCreateReview } = require("../middlewares/validators/validate-review")
 
 const userRoute = express.Router()
 
@@ -15,17 +16,17 @@ userRoute.post("/register", upload.fields([{ name: "imgProfile", maxCount: 1 }])
 // userRoute.post("/register", validateRegister, c.user.register) //
 userRoute.post("/loginWithFace", c.user.registerFacebook) // register ได้เฉพาะของฮั่นตอนนี้
 
-userRoute.post("/loginWithGoogle", c.user.registerGoogle) // //
+userRoute.post("/loginWithGoogle", c.user.registerGoogle) // // ฮั่นทำ validate แล้ว
 
-userRoute.patch("/password", authenticate, c.user.updatePassword) //
+userRoute.patch("/password", authenticate, c.user.updatePassword) // ฮั่นทำ validate แล้ว
 userRoute.post("/login", c.user.login) // //
 userRoute.patch("/", authenticate, c.user.update) //
 userRoute.patch("/user-img", authenticate, upload.fields([{ name: "imgProfile", maxCount: 1 }]), isOwn, c.user.updateProfile) //
 userRoute.delete("/:id", authenticate, c.user.delete)
-userRoute.post("/review", authenticate, upload.fields([{ name: "img" }]), c.user.createReview)
-userRoute.patch("/review", authenticate, c.user.updateReview)
-userRoute.delete("/review/:id", authenticate, c.user.deleteReview)
-userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c.user.updateReviewImg)
+userRoute.post("/review", authenticate, upload.fields([{ name: "img" }]), validateCreateReview, c.user.createReview) // ฮั่นทำ validate แล้ว
+userRoute.patch("/review", authenticate, c.user.updateReview) // ฮั่นทำ validate แล้ว
+userRoute.delete("/review/:id", authenticate, c.user.deleteReview) // ฮั่นทำ validate แล้ว
+userRoute.patch("/review-img", authenticate, upload.fields([{ name: "img" }]), c.user.updateReviewImg) // ฮั่นทำเส้นนี้เอง แต่ตอนนี้ยังไม่ได้ใช้
 
 //bookmark
 userRoute.post("/bookmark", authenticate, c.bookmarks.toggleBookmark)
