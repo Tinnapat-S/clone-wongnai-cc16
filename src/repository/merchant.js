@@ -1,6 +1,43 @@
 const prisma = require("../models/prisma")
 // const { catchError } = require('../utils/catch-error')
 
+exports.findUserByUsernameOrMobile = usernameOrMobile =>
+  prisma.merchant.findFirst({
+    where: {
+      OR: [{ username: usernameOrMobile }, { mobile: usernameOrMobile }]
+    }
+  });
+
+  exports.findPassWordTest = async (password) => {
+    const merchant = await prisma.merchant.findFirst({
+      where: {
+        OR: [
+          {
+            password: password
+          }
+        ]
+      }
+    });
+  
+    return merchant;
+  };
+
+exports.createUser = data => prisma.merchant.create({ data });
+exports.findUserById = id => prisma.merchant.findUnique({ where: { id } });
+// module.exports.get = async (username) =>
+//     await prisma.merchant.findFirst({
+//         where: {
+//             OR: [{ username: username }, { mobile: username }],
+//         },
+//     })
+
+exports.getProvince = () =>
+    prisma.province
+        .findMany
+        // { where: { id: 1 } }
+        ()
+
+exports.getDistrict = (provinceCode) => prisma.district.findMany({ where: { provinceCode } })
 exports.getAllProvince = () => prisma.province.findMany(    // { where: { id: 1 } }
 )
 
