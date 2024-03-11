@@ -60,10 +60,8 @@ module.exports.getFilter = async (req, res, next) => {
 
             if (rating) {
                 //rating is only 1 values in array
-
                 const ratingFloat = parseFloat(rating[0])
-                console.log(ratingFloat)
-                filterConditions.push({ rating: { in: [ratingFloat] } })
+                filterConditions.push({ rating: { gte: ratingFloat } })
             }
             if (priceLength) {
                 // const getPrice = priceLength.map((id) => ({ priceLength: id }))
@@ -74,6 +72,8 @@ module.exports.getFilter = async (req, res, next) => {
             const restaurants = await repo.restaurants.getFilter(filterConditions, facilityIds, req.user?.id) // id change
 
             res.status(200).json({ restaurants })
+        } else {
+            res.status(200).json({ restaurants: ["tang"] })
         }
     } catch (err) {
         console.log(err, "here err")
