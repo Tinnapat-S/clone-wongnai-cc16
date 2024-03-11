@@ -103,6 +103,14 @@ module.exports.getRestaurantById = async (id) =>
         },
     })
 
+module.exports.getCategoryById = async (id) =>
+    await prisma.category.findMany({
+        // where: { id },
+        include: {
+            restaurants: true,
+        },
+    })
+
 module.exports.uploadImg = (data) =>
     prisma.restaurantImage.createMany({
         data,

@@ -71,7 +71,7 @@ module.exports.login = async (req, res, next) => {
         delete user.facebookId
         user.role = "USER"
         // SIGN token from user data
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
         res.status(200).json({ token, user: user })
     } catch (err) {
         next(err)
@@ -115,7 +115,7 @@ module.exports.register = async (req, res, next) => {
         // SIGN token from user data
         // console.log(user)
         console.log(user)
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
 
         res.status(200).json({ token, user })
     } catch (err) {
@@ -146,7 +146,7 @@ module.exports.registerFacebook = async (req, res, next) => {
             return
         }
         const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
         delete user.password
         delete user.createdAt
         delete user.googleId
@@ -167,7 +167,7 @@ module.exports.registerGoogle = async (req, res, next) => {
         if (!findUser) {
             const user = await repo.user.registerGoogle(req.body.googleId, req.body.wt.Ad, req.body.profileObj.imageUrl)
 
-            const token = utils.jwt.sign({ userId: user.id })
+            const token = utils.jwt.sign({ userId: user.id, role: "USER" })
 
             delete user.password
             delete user.createdAt
@@ -179,7 +179,7 @@ module.exports.registerGoogle = async (req, res, next) => {
             return
         }
         // console.log("สมัครเเล้ว")
-        const token = utils.jwt.sign({ userId: findUser.id })
+        const token = utils.jwt.sign({ userId: findUser.id, role: "USER" })
 
         delete findUser.password
         delete findUser.createdAt
@@ -302,6 +302,8 @@ module.exports.delete = async (req, res, next) => {
 
 module.exports.createReview = async (req, res, next) => {
     try {
+        console.log(req.files.img)
+        console.log(req.body, "body")
         if (!req.files.img) {
             throw new CustomError("review image is require", "WRONG_INPUT", 400)
             return

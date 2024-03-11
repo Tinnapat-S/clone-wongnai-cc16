@@ -190,7 +190,7 @@ model Menu {
   restaurantId Int        @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   menuName     String     @map("menu_name") @db.VarChar(100)
-  subtitle     String     @map("sub_title") @db.VarChar(200)
+  subtitle     String?    @map("sub_title") @db.VarChar(200)
   price        Int?
   star         Int?
   img          String     @db.VarChar(256)

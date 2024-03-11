@@ -91,6 +91,15 @@ module.exports.getRestaurantById = async (req, res, next) => {
     }
 }
 
+module.exports.getCategoryById = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        const category = await repo.restaurants.getCategoryById(parseInt(id))
+        res.status(200).json({ category })
+    } catch (err) {
+        next(err)
+    }
+}
 module.exports.uploadRestaurantImg = async (req, res, next) => {
     try {
         const { restaurantId } = req.params
