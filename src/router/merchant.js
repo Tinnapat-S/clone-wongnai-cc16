@@ -23,7 +23,7 @@ merchRoute.patch("/menu-img/:id", upload.single("img"), controller.merchant.upda
 merchRoute.get("/province", controller.merchant.getProvince)
 merchRoute.post("/district", controller.merchant.getDistrict)
 merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
-merchRoute.post("/", validateLogin, controller.merchant.login)
+merchRoute.post("/login", validateLogin, controller.merchant.login)
 merchRoute.post("/register", validateRegister, controller.merchant.register)
 
 merchRoute.get("/me", authenticateMerc, controller.merchant.getMe)
