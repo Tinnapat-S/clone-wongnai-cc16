@@ -11,6 +11,12 @@ module.exports.getAll = async () =>
         },
     })
 
+module.exports.reviewPoint = (id, point) =>
+    prisma.restaurant.update({
+        where: { id },
+        data: { reviewPoint: { increment: point }, reviewCount: { increment: 1 } },
+    })
+
 // module.exports.getFilterWithUserId = async (filterConditions, facilityId, userId) =>
 //     await prisma.restaurant.findMany({
 //         where: {
@@ -90,4 +96,18 @@ module.exports.getRestaurantById = async (id) =>
                 },
             },
         },
+    })
+
+module.exports.uploadImg = (data) =>
+    prisma.restaurantImage.createMany({
+        data,
+    })
+module.exports.restaurantImg = (restaurantId) =>
+    prisma.restaurantImage.findMany({
+        where: { restaurantId },
+    })
+
+module.exports.deleteRestaurantImg = (id) =>
+    prisma.restaurantImage.delete({
+        where: { id },
     })
