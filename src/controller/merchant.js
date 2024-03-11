@@ -48,6 +48,11 @@ exports.getSubDistrict = catchError(async (req, res, next) => {
     console.log(subDistrict)
     res.status(200).json({ subDistrict })
 })
+exports.getMenu = catchError(async (req, res, next) => {
+    const { restaurantId } = req.params
+    const data = await repo.merchant.getMenuByRestaurantId(+restaurantId)
+    res.status(200).json({ data })
+})
 
 exports.createMenu = catchError(async (req, res, next) => {
     req.body.img = await uploadCloudinary(req.file.path)

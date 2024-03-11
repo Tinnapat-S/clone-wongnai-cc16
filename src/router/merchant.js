@@ -15,7 +15,7 @@ merchRoute.post("/create-restaurant", controller.merchant.createRestaurant)
 merchRoute.post("/get-by-name", controller.merchant.getGeoDataByName)
 merchRoute.get("/category", controller.merchant.getCategory)
 //////////////////////////// DO NOT DELETE ///////////////////////
-
+merchRoute.get("/menu/:restaurantId", controller.merchant.getMenu)
 merchRoute.post("/menu", upload.single("img"), controller.merchant.createMenu)
 merchRoute.delete("/menu/:id", controller.merchant.deleteMenu)
 merchRoute.patch("/menu/:id", controller.merchant.updateMenu)
