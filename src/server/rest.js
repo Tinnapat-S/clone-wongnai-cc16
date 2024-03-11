@@ -53,6 +53,10 @@ module.exports = function restApiServer(app) {
                     restaurantId: +restaurantId,
                     userId: +userId,
                 },
+                include: {
+                    restaurantid: true,
+                    userid: true,
+                },
             })
             res.status(200).json({ data })
         } catch (error) {

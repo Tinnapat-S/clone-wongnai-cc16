@@ -15,7 +15,12 @@ module.exports.reviewPoint = (id, point) =>
         where: { id },
         data: { reviewPoint: { increment: point }, reviewCount: { increment: 1 } },
     })
+module.exports.find = (id) => prisma.restaurant.findFirst({ where: { id } })
 
+module.exports.updateRating = (id, rating) => prisma.restaurant.update({ where: { id }, data: { rating } })
+
+module.exports.updataReviewPointReviewCount = (id, reviewPoint, rating) =>
+    prisma.restaurant.update({ where: { id }, data: { reviewPoint, rating, reviewCount: { decrement: 1 } } })
 // module.exports.getFilterWithUserId = async (filterConditions, facilityId, userId) =>
 //     await prisma.restaurant.findMany({
 //         where: {
