@@ -6,7 +6,8 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
-const { getBusinessInfoBYMerchantId } = require("../repository/merchant")
+const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen } = require("../repository/merchant")
+const { getRestaurantById } = require("./restaurants")
 
 module.exports.getMe = async (req, res, next) => {
     try {
@@ -147,15 +148,12 @@ exports.getGeoDataByName = catchError(async (req, res, next) => {
     res.status(200).json({ provinceData, districtData, subDistrictData })
 })
 
-
 exports.getCategory = catchError(async (req, res, next) => {
     const categories = await repo.categories.getAll()
     res.status(200).json({ categories })
 })
 
 exports.createRestaurant = catchError(async (req, res, next) => {
-
-
     const { resData, openHours, facility } = req.body
 
     resData.subDistrictCode = resData.subdistrictCode
@@ -174,41 +172,50 @@ exports.createRestaurant = catchError(async (req, res, next) => {
                     closeTime: new Date(`2024-02-02T` + time.close),
                 }
 
-                console.log(data);
+                console.log(data)
                 await repo.merchant.createOpenHours(data)
             }
-        }))
+        }),
+    )
 
-    console.log(facility);
+    console.log(facility)
 
     for (const key in facility) {
         if (Object.hasOwnProperty.call(facility, key)) {
-            const element = facility[key];
+            const element = facility[key]
             if (facility[key].value === true) {
                 const data = {
                     restaurantId: newRestaurant.id,
-                    facilityId: element.id
+                    facilityId: element.id,
                 }
 
-                console.log(element);
+                console.log(element)
                 await repo.merchant.createFacility(data)
             }
-
-
         }
     }
 
-
     res.status(200).json({ newRestaurant })
-}
-)
+})
 
-exports.getBusinessInfo = catchError(
-    async (req, res, next) => {
-        const { restaurantId } = req.body
-        const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
-        // console.log(restaurant);
-        res.status(200).json({ restaurant })
+exports.getBusinessInfo = catchError(async (req, res, next) => {
+    const { restaurantId } = req.body
+    const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
+    // console.log(restaurant);
+    res.status(200).json({ restaurant })
+})
+
+exports.toggleOpen = catchError(async (req, res, next) => {
+    const { id } = req.params
+
+    const restaurant = await repo.restaurants.getRestaurantById(+id)
+    console.log(restaurant)
+    console.log(restaurant.isOpen)
+    if (!restaurant.isOpen) {
+        const data = await toggleOpen(+id)
+        res.status(200).json({ data })
+        return
     }
-)
-
+    const data = await toggleClose(+id)
+    res.status(200).json({ data })
+})
