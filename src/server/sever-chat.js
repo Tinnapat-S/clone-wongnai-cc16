@@ -42,7 +42,7 @@ exports.restApiServerChat = (chat, chatServer) => {
             console.log("data", data)
             console.log("onlineUser", onlineUser)
             io.to([onlineUser[socket.handshake.auth.sender], onlineUser[msg.received]]).emit("received", {
-                ...msg, 
+                ...msg,
                 received: socket.handshake.auth.sender,
                 ...data,
             })
