@@ -70,3 +70,5 @@ exports.getGeoDataByPostCode = (postalCode) => prisma.subDistrict.findMany({ whe
 exports.createRestaurant = (data) => prisma.restaurant.create({ data })
 
 exports.createOpenHours = (data) => prisma.openHours.create({ data })
+
+exports.createMenu = (data) => prisma.menu.create({ data })

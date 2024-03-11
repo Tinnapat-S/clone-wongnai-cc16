@@ -104,7 +104,7 @@ module.exports.register = async (req, res, next) => {
         // SIGN token from merchant data
         // console.log(merchant)
         console.log(merchant)
-        const token = utils.jwt.sign({ merchantId: merchant.id, role: "merchant" })
+        const token = utils.jwt.sign({ merchantId: merchant.id, role: "MERCHANT" })
 
         res.status(200).json({ token, merchant })
     } catch (err) {
@@ -128,7 +128,7 @@ exports.login = catchError(async (req, res, next) => {
         createError("invalid credentials", 400)
     }
 
-    const payload = { userId: existsUser.id, role: "merchant" }
+    const payload = { userId: existsUser.id, role: "MERCHANT" }
     const accessToken = utils.jwt.sign(payload)
     delete existsUser.password
 
