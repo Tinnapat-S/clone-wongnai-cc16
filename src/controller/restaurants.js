@@ -4,6 +4,8 @@ const { CustomError } = require("../config/error")
 const { Role } = require("@prisma/client")
 const { district } = require("../config/prisma")
 const prisma = require("../config/prisma")
+const { uploadCloudinary } = require("../services/upload-cloudinary")
+const fs = require("fs/promises")
 
 module.exports.getAll = async (req, res, next) => {
     try {
@@ -95,5 +97,35 @@ module.exports.getCategoryById = async (req, res, next) => {
         res.status(200).json({ category })
     } catch (err) {
         next(err)
+    }
+}
+module.exports.uploadRestaurantImg = async (req, res, next) => {
+    try {
+        const { restaurantId } = req.params
+        // console.log(req.files.img, " req.files.img")
+        const array = []
+        for (let i of req.files.img) {
+            array.push({ img: await uploadCloudinary(i.path), restaurantId: +restaurantId })
+            fs.unlink(i.path)
+        }
+
+        console.log(array)
+        const img = await repo.restaurants.uploadImg(array)
+        const data = await repo.restaurants.restaurantImg(+restaurantId)
+        res.status(200).json({ data })
+    } catch (err) {
+        console.log(err)
+        next(err)
+    }
+}
+
+module.exports.deleteRestaurantImg = async (req, res, next) => {
+    try {
+        const { id } = req.params
+        await repo.restaurants.deleteRestaurantImg(+id)
+        res.status(200).json({ msg: "delete successful " })
+    } catch (error) {
+        console.log(error)
+        next(error)
     }
 }

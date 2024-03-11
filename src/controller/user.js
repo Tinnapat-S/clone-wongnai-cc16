@@ -36,7 +36,7 @@ module.exports.getMe = async (req, res, next) => {
         const user = await repo.user.userGetProfile(+id)
         if (!user) throw new CustomError("not found user", "WRONG_INPUT", 400)
         const reviews = await repo.user.getReview(+id)
-        const bookmarks = await repo.user.getBookmark(+id)
+        const bookmarks = await repo.user.getBookmarkById(+id)
         delete user.password
         delete user.createdAt
         delete user.googleId
@@ -71,7 +71,7 @@ module.exports.login = async (req, res, next) => {
         delete user.facebookId
         user.role = "USER"
         // SIGN token from user data
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
         res.status(200).json({ token, user: user })
     } catch (err) {
         next(err)
@@ -115,7 +115,7 @@ module.exports.register = async (req, res, next) => {
         // SIGN token from user data
         // console.log(user)
         console.log(user)
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
 
         res.status(200).json({ token, user })
     } catch (err) {
@@ -146,7 +146,7 @@ module.exports.registerFacebook = async (req, res, next) => {
             return
         }
         const user = await repo.user.createUserLoginWithFacebook({ facebookId: req.body.id, name: req.body.name })
-        const token = utils.jwt.sign({ userId: user.id })
+        const token = utils.jwt.sign({ userId: user.id, role: "USER" })
         delete user.password
         delete user.createdAt
         delete user.googleId
@@ -167,7 +167,7 @@ module.exports.registerGoogle = async (req, res, next) => {
         if (!findUser) {
             const user = await repo.user.registerGoogle(req.body.googleId, req.body.wt.Ad, req.body.profileObj.imageUrl)
 
-            const token = utils.jwt.sign({ userId: user.id })
+            const token = utils.jwt.sign({ userId: user.id, role: "USER" })
 
             delete user.password
             delete user.createdAt
@@ -179,7 +179,7 @@ module.exports.registerGoogle = async (req, res, next) => {
             return
         }
         // console.log("สมัครเเล้ว")
-        const token = utils.jwt.sign({ userId: findUser.id })
+        const token = utils.jwt.sign({ userId: findUser.id, role: "USER" })
 
         delete findUser.password
         delete findUser.createdAt
@@ -304,16 +304,24 @@ module.exports.createReview = async (req, res, next) => {
     try {
         console.log(req.files.img)
         console.log(req.body, "body")
+        if (!req.files.img) {
+            throw new CustomError("review image is require", "WRONG_INPUT", 400)
+            return
+        }
+
         const ALLIMGE = []
         for (let i of req.files.img) {
             ALLIMGE.push({ img: await uploadCloudinary(i.path) })
             fs.unlink(i.path)
         }
 
-        // console.log(ALLIMGE)
         req.body.userId = +req.user.id
         req.body.restaurantId = +req.body.restaurantId
         req.body.star = +req.body.star
+        const data = await repo.restaurants.find(req.body.restaurantId)
+        const rating = (data.reviewPoint + req.body.star) / (data.reviewCount + 1)
+        await repo.restaurants.updateRating(req.body.restaurantId, rating)
+        await repo.restaurants.reviewPoint(req.body.restaurantId, req.body.star)
         const review = await repo.user.createReview(req.body, ALLIMGE)
         res.status(200).json({ review })
     } catch (err) {
@@ -348,12 +356,23 @@ module.exports.updateReviewImg = async (req, res, next) => {
 
 module.exports.deleteReview = async (req, res, next) => {
     try {
-        console.log(req.params)
-        const deleteReviewImg = await repo.user.deleteReviewImg(+req.params.id)
-        console.log(deleteReviewImg)
-
+        const id = req.user.id
+        const check = await repo.user.findReview(+id, +req.params.id)
+        if (!check) {
+            throw new CustomError("other review", "WRONG_INPUT", 400)
+            return
+        }
+        await repo.user.deleteReviewImg(+req.params.id)
         const data = await repo.user.deleteReview(+req.params.id)
-        console.log(data)
+
+        const data1 = await repo.restaurants.find(data.restaurantId)
+        if (data1.reviewCount == 1) {
+            await repo.restaurants.updataReviewPointReviewCount(data.restaurantId, 0, 0)
+            res.status(204).json({ message: "deleted" })
+            return
+        }
+        const rating = (data1.reviewPoint - data.star) / (data1.reviewCount - 1)
+        await repo.restaurants.updataReviewPointReviewCount(data.restaurantId, data1.reviewPoint - data.star, rating)
 
         res.status(204).json({ message: "deleted" })
     } catch (err) {
@@ -372,6 +391,17 @@ module.exports.getBookmark = async (req, res, next) => {
             res.status(200).json({ bookmarks: false })
         }
     } catch (err) {
+        next(err)
+    }
+}
+
+module.exports.chatBox = async (req, res, next) => {
+    try {
+        const chatBox = await repo.user.getChatBox(+req.params.userId)
+        res.status(200).json({ chatBox })
+        // console.log(req.params.userId)
+    } catch (err) {
+        console.log(err)
         next(err)
     }
 }

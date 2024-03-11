@@ -144,6 +144,7 @@ model Restaurant {
   subtitle        String      @db.VarChar(500)
   lat             String?
   lng             String?
+  rating          Float       @default(0)
   reviewPoint     Int         @default(0) @map("review_point")
   reviewCount     Int         @default(0) @map("review_count")
   verify          Boolean     @default(false)
@@ -189,7 +190,7 @@ model Menu {
   restaurantId Int        @map("restaurant_id")
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
   menuName     String     @map("menu_name") @db.VarChar(100)
-  subtitle     String     @map("sub_title") @db.VarChar(200)
+  subtitle     String?    @map("sub_title") @db.VarChar(200)
   price        Int?
   star         Int?
   img          String     @db.VarChar(256)
@@ -286,4 +287,5 @@ model Chat {
   restaurantid Restaurant @relation(fields: [restaurantId], references: [id])
   message      String     @db.VarChar(100)
   sender       Roles
+  time         DateTime   @default(now())
 }
