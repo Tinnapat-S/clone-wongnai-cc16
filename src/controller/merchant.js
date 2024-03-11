@@ -64,6 +64,7 @@ exports.createMenu = catchError(async (req, res, next) => {
 })
 exports.deleteMenu = catchError(async (req, res, next) => {
     const { id } = req.params
+    console.log(id, "************")
     const data = await repo.merchant.deleteMenu(+id)
     res.status(201).json({ message: "seccess", data })
 })

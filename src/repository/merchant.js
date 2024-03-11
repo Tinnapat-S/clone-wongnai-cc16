@@ -21,6 +21,7 @@ exports.findPassWordTest = async (password) => {
 
     return merchant
 }
+exports.deleteMenu = (id) => prisma.menu.delete({ where: { id } })
 
 exports.createUser = (data) => prisma.merchant.create({ data })
 exports.findUserById = (id) => prisma.merchant.findUnique({ where: { id } })
