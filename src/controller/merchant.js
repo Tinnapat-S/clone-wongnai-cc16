@@ -6,7 +6,7 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
-const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen } = require("../repository/merchant")
+const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen, editRestaurantInfo } = require("../repository/merchant")
 const { getRestaurantById } = require("./restaurants")
 
 module.exports.getMe = async (req, res, next) => {
@@ -202,7 +202,9 @@ exports.getBusinessInfo = catchError(async (req, res, next) => {
     const { restaurantId } = req.body
     const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
     // console.log(restaurant);
-    res.status(200).json({ restaurant })
+    const { id, isOpen, reviewCount, reviewPoint, verify, profileImg, subDistrictCode, ...restaurantInfo } = restaurant
+    // delete restaurant.isOpen, restaurant.reviewCount, restaurant.reviewPoint, restaurant.verify, restaurant.profileImg, restaurant.subDistrictCode
+    res.status(200).json({ restaurantInfo })
 })
 
 exports.toggleOpen = catchError(async (req, res, next) => {
@@ -219,3 +221,50 @@ exports.toggleOpen = catchError(async (req, res, next) => {
     const data = await toggleClose(+id)
     res.status(200).json({ data })
 })
+
+exports.updateRestaurant = catchError(
+    async (req, res, next) => {
+        const { restaurantId, newData, openingHours, facility } = req.body
+
+        newData.subDistrictCode = newData.subdistrictCode
+        newData.lat = newData.lat + ""
+        newData.lng = newData.lng + ""
+        delete newData.subdistrictCode
+
+
+        const updatedRestaurant = await editRestaurantInfo(+restaurantId, newData)
+
+        Object.fromEntries(
+            Object.entries(openingHours).filter(async ([day, time]) => {
+                if (time.closed === false) {
+                    const data = {
+                        date: day,
+                        openTime: new Date(`2024-02-02T` + time.open),
+                        closeTime: new Date(`2024-02-02T` + time.close),
+                    }
+
+                    console.log(data)
+                    await repo.merchant.updateOpenHours(+restaurantId, data)
+                }
+            }),
+        )
+
+        for (const key in facility) {
+            if (Object.hasOwnProperty.call(facility, key)) {
+                const element = facility[key]
+                if (facility[key].value === true) {
+                    const data = {
+                        facilityId: element.id,
+                    }
+
+                    console.log(element)
+                    await repo.merchant.updateFacility(+restaurantId, data)
+                }
+            }
+        }
+
+
+        console.log(newData, openingHours, facility);
+        res.status(200).json({ updatedRestaurant })
+    }
+)
