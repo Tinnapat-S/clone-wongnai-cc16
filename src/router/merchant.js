@@ -19,7 +19,7 @@ merchRoute.post("/menu", upload.single("img"), controller.merchant.createMenu)
 merchRoute.delete("/menu/:id", controller.merchant.deleteMenu)
 merchRoute.patch("/menu/:id", controller.merchant.updateMenu)
 merchRoute.patch("/menu-img/:id", upload.single("img"), controller.merchant.updateMenuImg)
-merchRoute.post('/login',authenticateMerc,validateLogin,controller.merchant.login)
+merchRoute.post('/',validateLogin,controller.merchant.login)
 merchRoute.post('/register',validateRegister,controller.merchant.register)
     
 
