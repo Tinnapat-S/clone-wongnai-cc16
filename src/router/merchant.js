@@ -12,29 +12,16 @@ merchRoute.get("/province", controller.merchant.getProvince)
 merchRoute.post("/district", controller.merchant.getDistrict)
 merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
 merchRoute.post("/create-restaurant", controller.merchant.createRestaurant)
-<<<<<<< HEAD
 merchRoute.post('/get-by-name', controller.merchant.getGeoDataByName)
 merchRoute.get('/category', controller.merchant.getCategory)
 merchRoute.post('/get-businessinfo', controller.merchant.getBusinessInfo)
 
-=======
-merchRoute.post("/get-by-name", controller.merchant.getGeoDataByName)
-merchRoute.get("/category", controller.merchant.getCategory)
->>>>>>> 4db25aac05dd8dd302571a8f7bb9b4e05885370e
 //////////////////////////// DO NOT DELETE ///////////////////////
 merchRoute.get("/menu/:restaurantId", controller.merchant.getMenu)
 merchRoute.post("/menu", upload.single("img"), controller.merchant.createMenu)
 merchRoute.delete("/menu/:id", controller.merchant.deleteMenu)
 merchRoute.patch("/menu/:id", controller.merchant.updateMenu)
 merchRoute.patch("/menu-img/:id", upload.single("img"), controller.merchant.updateMenuImg)
-<<<<<<< HEAD
-merchRoute.get('/province', controller.merchant.getProvince)
-merchRoute.post('/district', controller.merchant.getDistrict)
-merchRoute.post('/sub-district', controller.merchant.getSubDistrict)
-merchRoute.post('/login', validateLogin, controller.merchant.login)
-merchRoute.post('/register', validateRegister, controller.merchant.register)
-
-=======
 merchRoute.get("/province", controller.merchant.getProvince)
 merchRoute.post("/district", controller.merchant.getDistrict)
 merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
@@ -42,6 +29,5 @@ merchRoute.post("/login", validateLogin, controller.merchant.login)
 merchRoute.post("/register", validateRegister, controller.merchant.register)
 
 merchRoute.get("/me", authenticateMerc, controller.merchant.getMe)
->>>>>>> 4db25aac05dd8dd302571a8f7bb9b4e05885370e
 
 module.exports = merchRoute
