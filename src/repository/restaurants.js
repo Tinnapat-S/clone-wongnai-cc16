@@ -7,6 +7,7 @@ module.exports.getAll = async () =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
+            reviews: true,
         },
     })
 
@@ -68,6 +69,7 @@ module.exports.getFilter = async (filterConditions, facilityId, userId) =>
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
             bookmarks: userId ? { where: { userId } } : false,
+            reviews: true,
         },
     })
 
@@ -77,6 +79,7 @@ module.exports.getRestaurantsBookmarkByUserId = async (userId) =>
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
             bookmarks: { where: { userId } },
+            reviews: true,
         },
     })
 
