@@ -30,6 +30,8 @@ merchRoute.post("/register", validateRegister, controller.merchant.register)
 merchRoute.patch("/toggleOpen/:id", controller.merchant.toggleOpen)
 merchRoute.patch("/update-restaurant", controller.merchant.updateRestaurant)
 merchRoute.get("/sideBar/:id", controller.merchant.getSideBar)
+merchRoute.get("/getMerchant", authenticateMerc, controller.merchant.getMerchant)
+merchRoute.get("/getChatBoxByRestaurantId/:restaurantId", authenticateMerc, controller.merchant.getChatBox)
 
 merchRoute.get("/me", authenticateMerc, controller.merchant.getMe)
 

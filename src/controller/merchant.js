@@ -8,11 +8,12 @@ const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
 const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen, editRestaurantInfo } = require("../repository/merchant")
 const { getRestaurantById } = require("./restaurants")
+const { response } = require("express")
 
 module.exports.getMe = async (req, res, next) => {
     try {
-        delete req.merchant.password
-        res.status(200).json({ merchant: req.merchant })
+        const restaurant = await repo.merchant.getAllRestaurantByMerchantId(req.merchant.id)
+        res.status(200).json({ restaurant })
     } catch (err) {
         console.log(err)
         next(err)
@@ -224,54 +225,61 @@ exports.toggleOpen = catchError(async (req, res, next) => {
     res.status(200).json({ data })
 })
 
-exports.updateRestaurant = catchError(
-    async (req, res, next) => {
-        const { restaurantId, newData, openingHours, facility } = req.body
+exports.updateRestaurant = catchError(async (req, res, next) => {
+    const { restaurantId, newData, openingHours, facility } = req.body
 
-        newData.subDistrictCode = newData.subdistrictCode
-        newData.lat = newData.lat + ""
-        newData.lng = newData.lng + ""
-        delete newData.subdistrictCode
+    newData.subDistrictCode = newData.subdistrictCode
+    newData.lat = newData.lat + ""
+    newData.lng = newData.lng + ""
+    delete newData.subdistrictCode
 
+    const updatedRestaurant = await editRestaurantInfo(+restaurantId, newData)
 
-        const updatedRestaurant = await editRestaurantInfo(+restaurantId, newData)
-
-        Object.fromEntries(
-            Object.entries(openingHours).filter(async ([day, time]) => {
-                if (time.closed === false) {
-                    const data = {
-                        date: day,
-                        openTime: new Date(`2024-02-02T` + time.open),
-                        closeTime: new Date(`2024-02-02T` + time.close),
-                    }
-
-                    console.log(data)
-                    await repo.merchant.updateOpenHours(+restaurantId, data)
+    Object.fromEntries(
+        Object.entries(openingHours).filter(async ([day, time]) => {
+            if (time.closed === false) {
+                const data = {
+                    date: day,
+                    openTime: new Date(`2024-02-02T` + time.open),
+                    closeTime: new Date(`2024-02-02T` + time.close),
                 }
-            }),
-        )
 
-        for (const key in facility) {
-            if (Object.hasOwnProperty.call(facility, key)) {
-                const element = facility[key]
-                if (facility[key].value === true) {
-                    const data = {
-                        facilityId: element.id,
-                    }
+                console.log(data)
+                await repo.merchant.updateOpenHours(+restaurantId, data)
+            }
+        }),
+    )
 
-                    console.log(element)
-                    await repo.merchant.updateFacility(+restaurantId, data)
+    for (const key in facility) {
+        if (Object.hasOwnProperty.call(facility, key)) {
+            const element = facility[key]
+            if (facility[key].value === true) {
+                const data = {
+                    facilityId: element.id,
                 }
+
+                console.log(element)
+                await repo.merchant.updateFacility(+restaurantId, data)
             }
         }
-
-
-        console.log(newData, openingHours, facility);
-        res.status(200).json({ updatedRestaurant })
     }
-)
+
+    console.log(newData, openingHours, facility)
+    res.status(200).json({ updatedRestaurant })
+})
 exports.getSideBar = catchError(async (req, res, next) => {
     const { id } = req.params
     const data = await repo.restaurants.getSideBar(+id)
+    res.status(200).json({ data })
+})
+
+exports.getMerchant = catchError(async (req, res, next) => {
+    delete req.merchant.password
+    res.status(200).json({ merchant: req.merchant })
+})
+
+exports.getChatBox = catchError(async (req, res, next) => {
+    console.log(req.params, "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999")
+    const data = await repo.merchant.getChatBox(+req.params.restaurantId)
     res.status(200).json({ data })
 })
