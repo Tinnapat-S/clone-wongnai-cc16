@@ -74,18 +74,6 @@ exports.createOpenHours = (data) => prisma.openHours.create({ data })
 
 exports.createFacility = (data) => prisma.facilityWithRestaurantId.create({ data })
 
-exports.getBusinessInfoBYMerchantId = () => prisma.$queryRaw`
-SELECT 
- *
-FROM
-    restaurants
-        JOIN
-    facilities_with_restaurant_id ON restaurants.id = facilities_with_restaurant_id.restaurantId
-    JOIN
-    open_hours on open_hours.restaurant_id = restaurants.id
-WHERE
-    restaurants.id = 1
-`
 exports.getBusinessInfoBYMerchantId = (id) =>
   prisma.restaurant.findUnique({
     where: { id },
@@ -103,14 +91,7 @@ exports.toggleClose = (id) => prisma.restaurant.update({ where: { id }, data: { 
 
 exports.editRestaurantInfo = (id, data) => prisma.restaurant.update({ where: { id }, data })
 
-exports.updateOpenHours = (id, data) =>
-  prisma.openHours.upsert({
-    where: { restaurantId: id }, update: data, create: data
-  })
-
-
 exports.deleteFacility = (restaurantId) => prisma.facilityWithRestaurantId.deleteMany({ where: { restaurantId } })
 
 exports.deleteOpenHour = (restaurantId) => prisma.openHours.deleteMany({ where: { restaurantId } })
 
-exports.updateFacility = (id, data) => prisma.facilityWithRestaurantId.upsert({ where: { restaurantId: id }, update: data, create: data })
