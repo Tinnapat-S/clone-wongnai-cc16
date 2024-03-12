@@ -21,6 +21,7 @@ exports.findPassWordTest = async (password) => {
 
   return merchant
 }
+exports.deleteMenu = (id) => prisma.menu.delete({ where: { id } })
 
 exports.createUser = (data) => prisma.merchant.create({ data })
 exports.findUserById = (id) => prisma.merchant.findUnique({ where: { id } })
@@ -85,9 +86,23 @@ FROM
 WHERE
     restaurants.id = 1
 `
-exports.getBusinessInfoBYMerchantId = (id) => prisma.restaurant.findUnique({
-  where: { id },
-  include: { facilitiesWithRestaurantId: true, openHours: true }
-
-})
+exports.getBusinessInfoBYMerchantId = (id) =>
+  prisma.restaurant.findUnique({
+    where: { id },
+    include: { facilitiesWithRestaurantId: true, openHours: true },
+  })
 exports.createMenu = (data) => prisma.menu.create({ data })
+
+exports.toggleOpen = (id) =>
+  prisma.restaurant.update({
+    where: { id },
+    data: { isOpen: true },
+  })
+exports.toggleClose = (id) => prisma.restaurant.update({ where: { id }, data: { isOpen: false } })
+
+
+exports.editRestaurantInfo = (id, data) => prisma.restaurant.update({ where: { id }, data })
+
+exports.updateOpenHours = (id, data) => prisma.openHours.update({ where: { id }, data })
+
+exports.updateFacility = (id, data) => prisma.facilityWithRestaurantId.update({ where: { id }, data })

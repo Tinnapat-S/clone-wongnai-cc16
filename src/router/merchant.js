@@ -12,9 +12,9 @@ merchRoute.get("/province", controller.merchant.getProvince)
 merchRoute.post("/district", controller.merchant.getDistrict)
 merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
 merchRoute.post("/create-restaurant", controller.merchant.createRestaurant)
-merchRoute.post('/get-by-name', controller.merchant.getGeoDataByName)
-merchRoute.get('/category', controller.merchant.getCategory)
-merchRoute.post('/get-businessinfo', controller.merchant.getBusinessInfo)
+merchRoute.post("/get-by-name", controller.merchant.getGeoDataByName)
+merchRoute.get("/category", controller.merchant.getCategory)
+merchRoute.post("/get-businessinfo", controller.merchant.getBusinessInfo)
 
 //////////////////////////// DO NOT DELETE ///////////////////////
 merchRoute.get("/menu/:restaurantId", controller.merchant.getMenu)
@@ -27,6 +27,9 @@ merchRoute.post("/district", controller.merchant.getDistrict)
 merchRoute.post("/sub-district", controller.merchant.getSubDistrict)
 merchRoute.post("/login", validateLogin, controller.merchant.login)
 merchRoute.post("/register", validateRegister, controller.merchant.register)
+merchRoute.patch("/toggleOpen/:id", controller.merchant.toggleOpen)
+merchRoute.patch("/update-restaurant", controller.merchant.updateRestaurant)
+merchRoute.get("/sideBar/:id", controller.merchant.getSideBar)
 
 merchRoute.get("/me", authenticateMerc, controller.merchant.getMe)
 

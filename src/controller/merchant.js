@@ -6,7 +6,8 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
-const { getBusinessInfoBYMerchantId } = require("../repository/merchant")
+const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen, editRestaurantInfo } = require("../repository/merchant")
+const { getRestaurantById } = require("./restaurants")
 
 module.exports.getMe = async (req, res, next) => {
     try {
@@ -65,6 +66,7 @@ exports.createMenu = catchError(async (req, res, next) => {
 })
 exports.deleteMenu = catchError(async (req, res, next) => {
     const { id } = req.params
+    console.log(id, "************")
     const data = await repo.merchant.deleteMenu(+id)
     res.status(201).json({ message: "seccess", data })
 })
@@ -102,6 +104,7 @@ module.exports.register = async (req, res, next) => {
         // DELETE KEY of password from merchant data
         delete merchant.password
         delete merchant.createdAt
+        merchant.role = "RESTAURANT"
         // SIGN token from merchant data
         // console.log(merchant)
         console.log(merchant)
@@ -132,6 +135,7 @@ exports.login = catchError(async (req, res, next) => {
     const payload = { userId: existsUser.id, role: "MERCHANT" }
     const accessToken = utils.jwt.sign(payload)
     delete existsUser.password
+    existsUser.role = "RESTAURANT"
 
     res.status(200).json({ accessToken, merchant: existsUser })
 })
@@ -146,15 +150,12 @@ exports.getGeoDataByName = catchError(async (req, res, next) => {
     res.status(200).json({ provinceData, districtData, subDistrictData })
 })
 
-
 exports.getCategory = catchError(async (req, res, next) => {
     const categories = await repo.categories.getAll()
     res.status(200).json({ categories })
 })
 
 exports.createRestaurant = catchError(async (req, res, next) => {
-
-
     const { resData, openHours, facility } = req.body
 
     resData.subDistrictCode = resData.subdistrictCode
@@ -173,41 +174,104 @@ exports.createRestaurant = catchError(async (req, res, next) => {
                     closeTime: new Date(`2024-02-02T` + time.close),
                 }
 
-                console.log(data);
+                console.log(data)
                 await repo.merchant.createOpenHours(data)
             }
-        }))
+        }),
+    )
 
-    console.log(facility);
+    console.log(facility)
 
     for (const key in facility) {
         if (Object.hasOwnProperty.call(facility, key)) {
-            const element = facility[key];
+            const element = facility[key]
             if (facility[key].value === true) {
                 const data = {
                     restaurantId: newRestaurant.id,
-                    facilityId: element.id
+                    facilityId: element.id,
                 }
 
-                console.log(element);
+                console.log(element)
                 await repo.merchant.createFacility(data)
             }
-
-
         }
     }
 
-
     res.status(200).json({ newRestaurant })
-}
-)
+})
 
-exports.getBusinessInfo = catchError(
+exports.getBusinessInfo = catchError(async (req, res, next) => {
+    const { restaurantId } = req.body
+    const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
+    // console.log(restaurant);
+    const { id, isOpen, reviewCount, reviewPoint, verify, profileImg, subDistrictCode, ...restaurantInfo } = restaurant
+    // delete restaurant.isOpen, restaurant.reviewCount, restaurant.reviewPoint, restaurant.verify, restaurant.profileImg, restaurant.subDistrictCode
+    res.status(200).json({ restaurantInfo })
+})
+
+exports.toggleOpen = catchError(async (req, res, next) => {
+    const { id } = req.params
+
+    const restaurant = await repo.restaurants.getRestaurantById(+id)
+    console.log(restaurant)
+    console.log(restaurant.isOpen)
+    if (!restaurant.isOpen) {
+        const data = await toggleOpen(+id)
+        res.status(200).json({ data })
+        return
+    }
+    const data = await toggleClose(+id)
+    res.status(200).json({ data })
+})
+
+exports.updateRestaurant = catchError(
     async (req, res, next) => {
-        const { restaurantId } = req.body
-        const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
-        // console.log(restaurant);
-        res.status(200).json({ restaurant })
+        const { restaurantId, newData, openingHours, facility } = req.body
+
+        newData.subDistrictCode = newData.subdistrictCode
+        newData.lat = newData.lat + ""
+        newData.lng = newData.lng + ""
+        delete newData.subdistrictCode
+
+
+        const updatedRestaurant = await editRestaurantInfo(+restaurantId, newData)
+
+        Object.fromEntries(
+            Object.entries(openingHours).filter(async ([day, time]) => {
+                if (time.closed === false) {
+                    const data = {
+                        date: day,
+                        openTime: new Date(`2024-02-02T` + time.open),
+                        closeTime: new Date(`2024-02-02T` + time.close),
+                    }
+
+                    console.log(data)
+                    await repo.merchant.updateOpenHours(+restaurantId, data)
+                }
+            }),
+        )
+
+        for (const key in facility) {
+            if (Object.hasOwnProperty.call(facility, key)) {
+                const element = facility[key]
+                if (facility[key].value === true) {
+                    const data = {
+                        facilityId: element.id,
+                    }
+
+                    console.log(element)
+                    await repo.merchant.updateFacility(+restaurantId, data)
+                }
+            }
+        }
+
+
+        console.log(newData, openingHours, facility);
+        res.status(200).json({ updatedRestaurant })
     }
 )
-
+exports.getSideBar = catchError(async (req, res, next) => {
+    const { id } = req.params
+    const data = await repo.restaurants.getSideBar(+id)
+    res.status(200).json({ data })
+})
