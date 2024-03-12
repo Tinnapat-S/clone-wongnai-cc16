@@ -6,7 +6,7 @@ const { catchError } = require("../utils/catch-error")
 const { uploadCloudinary } = require("../services/upload-cloudinary")
 const fs = require("fs/promises")
 const { createError } = require("../utils/creat-error")
-const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen, editRestaurantInfo } = require("../repository/merchant")
+const { getBusinessInfoBYMerchantId, toggleClose, toggleOpen, editRestaurantInfo, deleteOpenHour } = require("../repository/merchant")
 const { getRestaurantById } = require("./restaurants")
 
 module.exports.getMe = async (req, res, next) => {
@@ -236,37 +236,42 @@ exports.updateRestaurant = catchError(
 
         const updatedRestaurant = await editRestaurantInfo(+restaurantId, newData)
 
+        await repo.merchant.deleteOpenHour(+restaurantId)
+
         Object.fromEntries(
             Object.entries(openingHours).filter(async ([day, time]) => {
                 if (time.closed === false) {
                     const data = {
+                        restaurantId: +restaurantId,
                         date: day,
                         openTime: new Date(`2024-02-02T` + time.open),
                         closeTime: new Date(`2024-02-02T` + time.close),
                     }
 
                     console.log(data)
-                    await repo.merchant.updateOpenHours(+restaurantId, data)
+                    await repo.merchant.createOpenHours(data)
                 }
             }),
         )
+
+        await repo.merchant.deleteFacility(+restaurantId)
 
         for (const key in facility) {
             if (Object.hasOwnProperty.call(facility, key)) {
                 const element = facility[key]
                 if (facility[key].value === true) {
                     const data = {
+                        restaurantId: +restaurantId,
                         facilityId: element.id,
                     }
 
                     console.log(element)
-                    await repo.merchant.updateFacility(+restaurantId, data)
+                    await repo.merchant.createFacility(data)
                 }
             }
         }
 
 
-        console.log(newData, openingHours, facility);
         res.status(200).json({ updatedRestaurant })
     }
 )
