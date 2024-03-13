@@ -89,7 +89,7 @@ module.exports.getRestaurantById = async (id) =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
-            openHours: true,
+            openHours: { orderBy: { date: "asc" } },
             facilitiesWithRestaurantId: {
                 include: {
                     facility: { select: { facilityName: true } },
