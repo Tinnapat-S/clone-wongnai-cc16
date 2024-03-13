@@ -78,7 +78,7 @@ module.exports.getRestaurantsBookmarkByUserId = async (userId) =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
-            bookmarks: { where: { userId } },
+            bookmarks: userId ? { where: { userId } } : false,
             reviews: true,
         },
     })
