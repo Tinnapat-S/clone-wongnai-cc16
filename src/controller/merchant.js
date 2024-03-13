@@ -268,7 +268,7 @@ exports.updateRestaurant = catchError(async (req, res, next) => {
             }
 
             console.log(element)
-            await repo.merchant.updateFacility(+restaurantId, data)
+            // await repo.merchant.updateFacility(+restaurantId, data)
         }
     }
 
