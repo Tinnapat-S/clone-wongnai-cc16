@@ -98,6 +98,7 @@ module.exports.getRestaurantById = async (id) =>
             reviews: {
                 include: {
                     user: true,
+                    reviewImgs: true,
                 },
             },
         },
