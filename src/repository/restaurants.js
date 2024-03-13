@@ -100,6 +100,7 @@ module.exports.getRestaurantById = async (id) =>
                     user: true,
                 },
             },
+            menus: true,
         },
     })
 

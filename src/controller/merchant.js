@@ -287,7 +287,6 @@ exports.getMerchant = catchError(async (req, res, next) => {
 })
 
 exports.getChatBox = catchError(async (req, res, next) => {
-    console.log(req.params, "99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999")
     const data = await repo.merchant.getChatBox(+req.params.restaurantId)
     res.status(200).json({ data })
 })
