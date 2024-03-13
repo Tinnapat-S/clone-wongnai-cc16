@@ -78,7 +78,7 @@ module.exports.getRestaurantsBookmarkByUserId = async (userId) =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
-            bookmarks: { where: { userId } },
+            bookmarks: userId ? { where: { userId } } : false,
             reviews: true,
         },
     })
@@ -89,7 +89,7 @@ module.exports.getRestaurantById = async (id) =>
         include: {
             restaurantImages: { select: { id: true, img: true } },
             category: { select: { categoryName: true } },
-            openHours: true,
+            openHours: { orderBy: { date: "asc" } },
             facilitiesWithRestaurantId: {
                 include: {
                     facility: { select: { facilityName: true } },
@@ -98,6 +98,7 @@ module.exports.getRestaurantById = async (id) =>
             reviews: {
                 include: {
                     user: true,
+                    reviewImgs: true,
                 },
             },
             menus: true,

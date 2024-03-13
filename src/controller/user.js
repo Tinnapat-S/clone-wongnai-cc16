@@ -319,7 +319,8 @@ module.exports.createReview = async (req, res, next) => {
         req.body.restaurantId = +req.body.restaurantId
         req.body.star = +req.body.star
         const data = await repo.restaurants.find(req.body.restaurantId)
-        const rating = (data.reviewPoint + req.body.star) / (data.reviewCount + 1)
+        const rating = +((data.reviewPoint + req.body.star) / (data.reviewCount + 1)).toFixed(2)
+        console.log(rating, "rating")
         await repo.restaurants.updateRating(req.body.restaurantId, rating)
         await repo.restaurants.reviewPoint(req.body.restaurantId, req.body.star)
         const review = await repo.user.createReview(req.body, ALLIMGE)
