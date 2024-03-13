@@ -205,7 +205,7 @@ exports.getBusinessInfo = catchError(async (req, res, next) => {
     const { restaurantId } = req.body
     const restaurant = await getBusinessInfoBYMerchantId(restaurantId)
     // console.log(restaurant);
-    const { id, isOpen, reviewCount, reviewPoint, verify, profileImg, subDistrictCode, ...restaurantInfo } = restaurant
+    const { id, isOpen, reviewCount, reviewPoint, verify, profileImg, subDistrictCode, rating, ...restaurantInfo } = restaurant
     // delete restaurant.isOpen, restaurant.reviewCount, restaurant.reviewPoint, restaurant.verify, restaurant.profileImg, restaurant.subDistrictCode
     res.status(200).json({ restaurantInfo })
 })
@@ -268,7 +268,7 @@ exports.updateRestaurant = catchError(async (req, res, next) => {
             }
 
             console.log(element)
-            await repo.merchant.updateFacility(+restaurantId, data)
+            // await repo.merchant.updateFacility(+restaurantId, data)
         }
     }
 
