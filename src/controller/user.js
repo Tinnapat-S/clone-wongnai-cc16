@@ -363,8 +363,6 @@ module.exports.deleteReview = async (req, res, next) => {
             throw new CustomError("other review", "WRONG_INPUT", 400)
             return
         }
-        await repo.user.deleteReviewImg(+req.params.id)
-        const data = await repo.user.deleteReview(+req.params.id)
 
         const data1 = await repo.restaurants.find(data.restaurantId)
         if (data1.reviewCount == 1) {
@@ -372,6 +370,8 @@ module.exports.deleteReview = async (req, res, next) => {
             res.status(204).json({ message: "deleted" })
             return
         }
+        await repo.user.deleteReviewImg(+req.params.id)
+        const data = await repo.user.deleteReview(+req.params.id)
         const rating = (data1.reviewPoint - data.star) / (data1.reviewCount - 1)
         await repo.restaurants.updataReviewPointReviewCount(data.restaurantId, data1.reviewPoint - data.star, rating)
 
